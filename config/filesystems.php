@@ -47,6 +47,20 @@ return [
             'report' => false,
         ],
 
+        /*
+         * Writes straight into public/ so uploaded paths (e.g. "images/foo.jpg")
+         * resolve through asset() exactly like the images shipped with the site.
+         */
+        'site' => [
+            'driver' => 'local',
+            'root' => public_path(),
+            // Root-relative on purpose: keeps image URLs correct on any host or
+            // port without depending on APP_URL being in sync.
+            'url' => '/',
+            'visibility' => 'public',
+            'throw' => false,
+        ],
+
         's3' => [
             'driver' => 's3',
             'key' => env('AWS_ACCESS_KEY_ID'),
