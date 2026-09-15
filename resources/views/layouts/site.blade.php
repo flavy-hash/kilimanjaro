@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>@yield('title', 'Safiri · Tanzania Safaris, Kilimanjaro & Zanzibar')</title>
+<title>@yield('title', 'Perfect Kilimanjaro · Tanzania Safaris, Kilimanjaro & Zanzibar')</title>
 <meta name="description" content="@yield('meta_description', 'Locally owned safari, Kilimanjaro and Zanzibar trips out of Arusha, Tanzania.')">
 <meta name="csrf-token" content="{{ csrf_token() }}">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -68,8 +68,18 @@
     border:1px solid rgba(255,122,47,.3);animation:pulse 3s ease-in-out infinite;
   }
   @keyframes pulse{0%,100%{transform:scale(1);opacity:.6}50%{transform:scale(1.15);opacity:0}}
-  .brand-name{font-family:'Syne',sans-serif;font-size:20px;font-weight:700;letter-spacing:-.02em;color:var(--ice)}
+  .brand-name{font-family:'Syne',sans-serif;font-size:20px;font-weight:700;letter-spacing:-.02em;color:var(--ice);white-space:nowrap}
   .brand-name span{color:var(--glow)}
+  /* Two-word wordmark: step it down before it can crowd the nav links or,
+     on a phone, the "Plan my trip" button. */
+  @media(max-width:1240px){ .brand-name{font-size:18px} }
+  @media(max-width:560px){ .brand-name{font-size:16px} }
+  @media(max-width:430px){
+    .brand{gap:9px}
+    /* Below this the one-line wordmark pushes the hamburger off-screen, so in
+       the bar only it stacks to two lines. min-content breaks it at the space. */
+    #nav .brand-name{font-size:15px;white-space:normal;width:min-content;line-height:1.04}
+  }
   .nav-links{display:flex;align-items:center;gap:6px;position:relative}
   .nav-item{position:static}
   .nav-top{
@@ -77,6 +87,7 @@
     color:var(--dim);text-decoration:none;font-size:14px;font-weight:400;
     cursor:pointer;transition:.2s;letter-spacing:.01em;padding:10px 14px;
   }
+  .nav-top{white-space:nowrap}
   .nav-top svg{transition:.25s;opacity:.6}
   .nav-item:hover .nav-top{color:var(--ice)}
   .nav-item:hover .nav-top svg{transform:rotate(180deg);opacity:1}
@@ -120,6 +131,15 @@
   .dropdown-photo img{width:100%;height:100%;object-fit:cover;display:block;min-height:180px}
 
   .nav-right{display:flex;align-items:center;gap:12px}
+  /* The wordmark leaves the bar tight on a phone, so the CTA must never wrap
+     into a blob — it shortens to "Plan" instead. */
+  .nav-cta{white-space:nowrap;flex-shrink:0}
+  .nav-cta-short{display:none}
+  @media(max-width:560px){
+    .nav-cta{padding:10px 16px;font-size:13px}
+    .nav-cta-long{display:none}
+    .nav-cta-short{display:inline}
+  }
   .hamburger{
     display:none;width:40px;height:40px;border-radius:50%;flex-shrink:0;
     background:var(--glass);border:1px solid var(--line);color:var(--ice);
@@ -127,7 +147,9 @@
   }
   .hamburger:hover{background:rgba(255,255,255,.08)}
 
-  @media(max-width:1080px){
+  /* Raised from 1080px: the longer wordmark leaves too little room for six
+     links between roughly 1080 and 1200, where they used to crowd it. */
+  @media(max-width:1199px){
     .nav-links{display:none}
     .hamburger{display:flex}
   }
@@ -873,12 +895,12 @@
     <div class="brand-mark">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="#1a0a00"><path d="m8 3 4 8 5-5 5 15H2L8 3z"/></svg>
     </div>
-    <div class="brand-name">Safiri<span>.</span></div>
+    <div class="brand-name">Perfect Kilimanjaro<span>.</span></div>
   </a>
   <div class="nav-links" id="navLinks"></div>
   <div class="nav-right">
     <button class="btn btn-fill nav-cta" onclick="openBooking()">
-      Plan my trip
+      <span class="nav-cta-long">Plan my trip</span><span class="nav-cta-short">Plan</span>
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
     </button>
     <button class="hamburger" onclick="openMobileNav()" aria-label="Open menu">
@@ -896,7 +918,7 @@
         <div class="brand-mark">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="#1a0a00"><path d="m8 3 4 8 5-5 5 15H2L8 3z"/></svg>
         </div>
-        <div class="brand-name">Safiri<span>.</span></div>
+        <div class="brand-name">Perfect Kilimanjaro<span>.</span></div>
       </a>
       <p>Locally owned safari, Kilimanjaro and Zanzibar trips, run out of Arusha, Tanzania.</p>
       <div class="footer-social">
@@ -988,7 +1010,7 @@
       <div class="brand-mark">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="#1a0a00"><path d="m8 3 4 8 5-5 5 15H2L8 3z"/></svg>
       </div>
-      <div class="brand-name">Safiri<span>.</span></div>
+      <div class="brand-name">Perfect Kilimanjaro<span>.</span></div>
     </div>
     <div id="mobileNavList"></div>
     <button class="btn btn-fill" style="width:100%;justify-content:center;margin-top:24px" onclick="closeMobileNav();openBooking()">
