@@ -1,7 +1,7 @@
 @extends('layouts.site')
 
-@section('title', 'All Tours & Experiences · Safiri')
-@section('meta_description', 'Every trip we run in Tanzania — safaris, Kilimanjaro climbs and Zanzibar escapes, all planned and guided in-house.')
+@section('title', 'All Tours & Experiences · Perfect Kilimanjaro')
+@section('meta_description', 'Every trip we run in Tanzania — perfect kilimanajro, Kilimanjaro climbs and Zanzibar escapes, all planned and guided in-house.')
 
 @section('content')
 
