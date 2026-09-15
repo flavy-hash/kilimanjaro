@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Models\NavItem;
+use App\Models\Setting;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
@@ -25,6 +26,7 @@ class AppServiceProvider extends ServiceProvider
         // than every controller having to remember to pass it down.
         View::composer('layouts.site', function ($view) {
             $view->with('navItems', NavItem::forSite());
+            $view->with('siteTheme', Setting::siteTheme());
         });
     }
 }
