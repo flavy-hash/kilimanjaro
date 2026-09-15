@@ -30,7 +30,7 @@
   <div class="wrap">
     <div class="tag">What we run</div>
     <h2 class="section-title">Three trips. <em>One local team.</em></h2>
-    <p class="section-lede">No third-party brokers — every itinerary below is planned and led by our own Tanzanian guides and crews.</p>
+    <p class="section-lede">No third party brokers every itinerary below is planned and led by our own Tanzanian guides and crews.</p>
 
     <div class="pillars-grid" id="pillarsGrid"></div>
   </div>
