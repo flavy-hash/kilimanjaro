@@ -40,7 +40,7 @@ class AdminPanelProvider extends PanelProvider
             ->widgets([
                 AccountWidget::class,
             ])
-            ->brandName('Safiri Admin')
+            ->brandName('Perfect Kilimanjaro')
             ->navigationGroups([
                 'Packages',
                 'Content',
