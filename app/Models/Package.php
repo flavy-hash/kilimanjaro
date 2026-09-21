@@ -38,6 +38,11 @@ class Package extends Model
         return $this->hasMany(Inquiry::class);
     }
 
+    public function reviews(): HasMany
+    {
+        return $this->hasMany(Review::class);
+    }
+
     public function scopePublished(Builder $query): Builder
     {
         return $query->where('is_published', true);

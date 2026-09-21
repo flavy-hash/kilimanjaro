@@ -430,6 +430,25 @@
   }
   .section-lede{color:var(--dim);font-size:16.5px;line-height:1.65;max-width:58ch;font-weight:300}
 
+  /* intro / positioning statement, right under the hero */
+  #intro{padding-top:88px;padding-bottom:88px}
+  /* Guaranteed gutter: the section's own 5vw padding shrinks away at medium
+     widths where the column nearly fills it, so the text can end up hugging
+     the edge. This keeps a floor of breathing room no matter the viewport. */
+  .intro-wrap{max-width:1180px;margin:0 auto;text-align:center;padding:0 28px;box-sizing:border-box}
+  .intro-wrap .tag{justify-content:center}
+  .intro-wrap .tag::before{display:none}
+  .intro-wrap h2.section-title{max-width:none;margin:0 auto 28px}
+  /* One single column at every width — wider than a typical text measure so
+     it still uses the section's space instead of leaving big empty margins,
+     but never split into left/right blocks. */
+  .intro-copy{color:var(--dim);font-size:16px;line-height:1.8;font-weight:300;text-align:left;max-width:860px;margin:0 auto}
+  /* Paragraphs run together as one continuous block — no gap between them
+     beyond the normal line-height, so it reads as a single passage rather
+     than separate chunks. */
+  .intro-copy p{margin:0}
+  .intro-copy strong{color:var(--ice);font-weight:500}
+
   /* pillars */
   .pillars-grid{
     display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:64px;
@@ -460,6 +479,126 @@
     color:var(--ice);transition:.3s;
   }
   .pillar:hover .pillar-arrow{background:var(--pc);color:#1a0a00;border-color:transparent;transform:rotate(-45deg)}
+
+  /* Kilimanjaro route explorer — an illustrated topographic-style map with an
+     animated path per route, on its own dark "backdrop" card so the parchment
+     map reads the same way in either site theme. Waypoint positions and route
+     copy are fixed reference content (approximate, per the on-map disclaimer)
+     rather than pulled from booking data — a deliberately different, more
+     editorial treatment than the rest of the site. */
+  #routes{padding-top:0}
+  .route-explorer{
+    margin-top:36px;border-radius:28px;padding:20px;
+    background:linear-gradient(160deg,#1c231d,#141a15);border:1px solid var(--line);
+  }
+  .route-stats-row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+  .route-stat-pill{
+    background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);
+    border-radius:100px;padding:8px 16px;font-size:12.5px;color:#d7dccf;
+    display:flex;flex-direction:column;min-width:88px;
+  }
+  .route-stat-pill b{font-family:'Syne',sans-serif;font-size:17px;color:#f2efe4;font-weight:700}
+
+  .route-explorer-panel{display:grid;grid-template-columns:220px minmax(0,1fr);gap:20px;align-items:start}
+
+  .route-nav{display:flex;flex-direction:column;gap:8px}
+  .route-nav button{
+    all:unset;cursor:pointer;display:flex;align-items:center;gap:10px;box-sizing:border-box;
+    padding:13px 16px;border-radius:10px;background:rgba(255,255,255,.04);
+    border:1px solid rgba(255,255,255,.08);color:#c7cdbe;
+    font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:500;
+    transition:background .18s ease,border-color .18s ease,color .18s ease,transform .18s ease;
+  }
+  .route-nav button:hover{background:rgba(255,255,255,.08);transform:translateX(2px)}
+  .route-nav button .dot{width:7px;height:7px;border-radius:50%;background:#5c6656;flex-shrink:0}
+  .route-nav button[aria-selected="true"]{
+    background:linear-gradient(100deg,var(--c-kili),#a8431a);border-color:transparent;color:#fff;
+  }
+  .route-nav button[aria-selected="true"] .dot{background:var(--sun);box-shadow:0 0 0 3px rgba(255,214,107,.28)}
+  .route-nav button .sub{margin-left:auto;font-size:11px;opacity:.75;font-weight:400}
+
+  .route-map-card{
+    background:#e9e5d6;border-radius:18px;padding:14px 14px 0;position:relative;overflow:hidden;
+    box-shadow:0 30px 60px -25px rgba(0,0,0,.6);
+  }
+  /* Capped rather than filling the column width — the full-size map needed
+     more scrolling than a visitor would give it — but not so capped that the
+     camp labels stop being readable; legibility wins over fitting one screen
+     exactly. height:auto below the cap still lets it shrink on narrow screens. */
+  .route-map-card svg{display:block;width:auto;height:min(64vh,560px);max-width:100%;margin:0 auto}
+  .route-map-legend{
+    position:absolute;top:16px;right:18px;background:rgba(255,255,255,.78);backdrop-filter:blur(4px);
+    border:1px solid rgba(0,0,0,.08);border-radius:10px;padding:7px 11px;font-size:10.5px;
+    color:#5b6157;display:flex;gap:12px;font-family:'Space Grotesk',sans-serif;
+  }
+  .route-map-legend span{display:flex;align-items:center;gap:6px}
+  .route-map-legend svg{width:18px;height:8px;flex-shrink:0}
+
+  .route-desc-card{background:#e3ded0;border-radius:14px;padding:16px 20px 18px;margin:12px 0 0;color:#20261f}
+  .route-desc-card h3{
+    font-family:'Syne',sans-serif;font-weight:700;font-size:18px;margin:0 0 3px;
+    display:flex;align-items:center;gap:8px;
+  }
+  .route-desc-card h3 svg{width:15px;height:15px;flex-shrink:0;color:#3f6b4a}
+  .route-desc-meta{font-size:12px;color:#5b6157;margin-bottom:9px;font-family:'JetBrains Mono',monospace}
+  .route-desc-card p{font-size:13.5px;line-height:1.55;margin:0 0 10px;color:#3a4136;max-width:64ch}
+  .route-view{
+    display:inline-flex;align-items:center;gap:6px;color:#8a4423;text-decoration:none;
+    font-size:13.5px;font-weight:600;
+  }
+  .route-view:hover{color:#5b2f13}
+  .route-note{color:var(--dim);font-size:11px;margin:10px 0 0;font-style:italic}
+
+  /* Referenced directly inside the JS-generated SVG string, so these names
+     stay fixed rather than following the site's usual --token pattern. */
+  .marker-label{font-family:'Space Grotesk',sans-serif;font-size:12.5px;font-weight:600;fill:#20261f}
+  .marker-elev{font-family:'Space Grotesk',sans-serif;font-size:10.5px;fill:#5b6157}
+  .marker-label-dim,.marker-elev-dim{fill:#9aa091}
+  .peak-label{font-family:'Syne',sans-serif;font-weight:700;font-size:15.5px;fill:#20261f}
+
+  .equip-banner{
+    margin-top:20px;border-radius:28px;padding:32px 40px;position:relative;overflow:hidden;
+    background:linear-gradient(135deg,#151d2c,var(--void));border:1px solid var(--line);
+    display:flex;align-items:center;gap:32px;
+  }
+  .equip-glow{
+    position:absolute;top:-60px;right:-40px;width:280px;height:280px;border-radius:50%;
+    background:radial-gradient(circle,rgba(255,122,47,.3),transparent 70%);pointer-events:none;
+  }
+  .equip-icon{
+    flex-shrink:0;width:96px;height:120px;background:#f7f5ec;border-radius:12px 12px 12px 2px;
+    box-shadow:0 18px 34px -12px rgba(0,0,0,.55);position:relative;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;
+    color:var(--deep);transform:rotate(-3deg);
+  }
+  .equip-icon::before{
+    content:"";position:absolute;top:0;right:0;width:16px;height:16px;
+    background:#e4e0d0;border-radius:0 12px 0 12px;
+  }
+  .equip-icon-label{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;letter-spacing:.1em}
+  .equip-body{position:relative;min-width:0}
+  .equip-body h3{font-family:'Syne',sans-serif;font-weight:700;font-size:clamp(20px,2.2vw,26px);color:var(--sun);margin-bottom:8px}
+  .equip-body p{color:var(--dim);font-size:14px;line-height:1.6;max-width:52ch;margin-bottom:20px}
+  .equip-download{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:.1em;text-transform:uppercase}
+
+  @media(max-width:640px){
+    .equip-banner{flex-direction:column;align-items:flex-start;padding:26px}
+  }
+
+  @media(max-width:860px){
+    .route-explorer-panel{grid-template-columns:1fr}
+    .route-nav{flex-direction:row;overflow-x:auto;gap:6px;padding-bottom:2px}
+    .route-nav button{white-space:nowrap}
+    .route-nav button .sub{display:none}
+    /* The height cap above assumes a wide column with room to spare; on a
+       narrow single-column layout max-width:100% would fight it and shrink
+       the map far more than intended. Filling the width and following the
+       aspect ratio reads better here — the page is already a long scroll.
+       Scoped to the map itself (#kiliMap), not ".route-map-card svg" — that
+       broader selector also matches the small Ascent/Descent legend icons
+       and, being later in the cascade, would stretch them full-width too. */
+    #kiliMap{width:100%;height:auto}
+  }
 
   /* trips / tabs */
   .trips-head{display:flex;justify-content:space-between;align-items:flex-end;gap:30px;flex-wrap:wrap;margin-bottom:40px}
@@ -821,6 +960,88 @@
   }
   .review-who strong{display:block;font-size:13.5px}
   .review-who span{color:var(--dim);font-size:12px}
+  .section-more-link{
+    display:inline-flex;align-items:center;gap:6px;margin-top:32px;
+    color:var(--glow-soft);text-decoration:none;font-size:14px;font-weight:500;transition:.2s;
+  }
+  .section-more-link:hover{color:var(--glow);gap:9px}
+
+  /* /reviews page: a flat dark header (no photo — a deliberately calmer,
+     content-first page rather than another destination hero), a full-width
+     stat band sitting flush under it, then a two-column review grid. */
+  .reviews-hero{padding:150px 5vw 44px;background:var(--void)}
+  .reviews-hero-inner{
+    display:flex;justify-content:space-between;align-items:flex-end;gap:24px;flex-wrap:wrap;
+    max-width:1400px;margin:0 auto;
+  }
+  .reviews-hero .tag{margin-bottom:0}
+  .reviews-hero h1{margin:14px 0 10px}
+  .reviews-hero .section-lede{margin-bottom:0}
+
+  .review-stat-band{background:var(--panel);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .review-stat-band-inner{
+    max-width:1400px;margin:0 auto;padding:36px 5vw;
+    display:flex;align-items:center;justify-content:center;gap:48px;flex-wrap:wrap;
+  }
+  .review-summary-score{text-align:center;padding-right:44px;border-right:1px solid var(--line)}
+  .review-summary-score .num{font-family:'Syne',sans-serif;font-weight:800;font-size:52px;line-height:1;color:var(--ice)}
+  .review-summary-score .stars{color:var(--sun);font-size:16px;letter-spacing:3px;margin:8px 0 6px}
+  .review-summary-score .count{color:var(--dim);font-size:12.5px}
+  .review-stat-metrics{display:flex;gap:44px;flex-wrap:wrap}
+  .review-stat-metric{text-align:center;min-width:120px}
+  .review-stat-metric .label{
+    font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:.08em;
+    font-size:10.5px;color:var(--dim);margin-bottom:10px;
+  }
+  .review-stat-metric .num{font-family:'Syne',sans-serif;font-weight:800;font-size:32px;color:var(--ice);margin-bottom:10px}
+  .review-bar-track{height:6px;border-radius:100px;background:var(--glass-3);overflow:hidden}
+  .review-bar-fill{height:100%;border-radius:100px;background:linear-gradient(90deg,var(--sun),var(--glow))}
+
+  .review-list{display:grid;grid-template-columns:repeat(2,1fr);gap:20px;margin-bottom:0}
+  .review-card{padding:28px;border-radius:20px;background:var(--glass);border:1px solid var(--line)}
+  .review-card-head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin-bottom:16px;flex-wrap:wrap}
+  .review-card-who{display:flex;align-items:center;gap:12px}
+  .review-card-meta{text-align:right}
+  .review-card-meta .stars{color:var(--sun);font-size:13px;letter-spacing:2px}
+  .review-card-meta .date{color:var(--dim);font-size:11.5px;font-family:'JetBrains Mono',monospace;margin-top:5px}
+  .review-card h3{font-family:'Syne',sans-serif;font-weight:600;font-size:17px;margin-bottom:8px}
+  .review-card p{color:var(--dim);font-size:14.5px;line-height:1.7;margin-bottom:14px}
+  .review-card-sub{display:flex;gap:16px;flex-wrap:wrap;font-size:12px;color:var(--dim);margin-bottom:6px}
+  .review-card-sub b{color:var(--ice)}
+  .review-card-trip{
+    display:inline-flex;align-items:center;gap:6px;padding:6px 13px;border-radius:100px;
+    background:var(--glass-2);border:1px solid var(--line);color:var(--glow-soft);
+    font-size:11.5px;text-decoration:none;margin-top:8px;transition:.2s;
+  }
+  .review-card-trip:hover{border-color:var(--glow);color:var(--glow)}
+  .review-card-photo{margin-top:16px;border-radius:14px;max-width:240px;width:100%;display:block}
+
+  /* the write-a-review drawer reuses .overlay/.drawer (the same pattern as
+     the booking form and the mobile menu), just under its own id */
+  .review-drawer .drawer h3{font-size:26px}
+  .star-picker{display:flex;gap:8px}
+  .star-picker button{all:unset;cursor:pointer;color:var(--line-hi);transition:.15s;line-height:1}
+  .star-picker button svg{width:26px;height:26px}
+  .star-picker button.active,.star-picker button:hover{color:var(--sun)}
+  .review-form-note{color:var(--dim);font-size:12.5px;margin-top:-8px;margin-bottom:20px}
+
+  /* top activities — alternating image/text rows, flipping side each row */
+  .activity-rows{display:flex;flex-direction:column;gap:72px;margin-top:56px}
+  .activity-row{display:grid;grid-template-columns:0.85fr 1.15fr;gap:56px;align-items:center}
+  /* order flips which element sits in which track without flipping the
+     tracks' own widths, so without this the image would land in the wider
+     1.15fr track on every even row and end up visibly bigger than on odd
+     rows. Flipping grid-template-columns to match keeps the image's share
+     (0.85 of the row) — and so its rendered size — the same every row. */
+  .activity-row:nth-child(even){grid-template-columns:1.15fr 0.85fr}
+  .activity-row:nth-child(even) .activity-media{order:2}
+  .activity-row:nth-child(even) .activity-text{order:1}
+  .activity-media{position:relative;border-radius:20px;overflow:hidden;aspect-ratio:4/3;background:var(--ink)}
+  .activity-media img{width:100%;height:100%;object-fit:cover;display:block;transition:.6s cubic-bezier(.2,.8,.3,1)}
+  .activity-row:hover .activity-media img{transform:scale(1.05)}
+  .activity-eyebrow{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--glow-soft);margin-bottom:12px}
+  .activity-text h3{font-family:'Syne',sans-serif;font-weight:700;font-size:clamp(22px,2.4vw,30px);letter-spacing:-.02em;margin-bottom:14px}
+  .activity-text p{color:var(--dim);font-size:15px;line-height:1.75;max-width:46ch}
 
   /* cta band */
   .cta-band{
@@ -866,6 +1087,37 @@
   .wa-float::after{content:"";position:absolute;inset:-6px;border-radius:50%;border:1px solid rgba(63,214,122,.4);animation:pulse 2.4s ease-in-out infinite}
   .wa-float:hover{transform:scale(1.08)}
 
+  /* language switcher float — stacked directly above .wa-float, same corner */
+  .lang-float-wrap{position:fixed;bottom:96px;right:26px;z-index:70}
+  .lang-float{
+    all:unset;cursor:pointer;width:56px;height:56px;border-radius:50%;
+    background:linear-gradient(135deg,var(--sun),var(--glow));display:flex;align-items:center;justify-content:center;
+    color:#1a0a00;box-shadow:0 10px 30px rgba(255,122,47,.4);transition:.3s;box-sizing:border-box;
+  }
+  .lang-float:hover{transform:scale(1.08)}
+  .lang-panel{
+    position:absolute;bottom:calc(100% + 12px);right:0;width:200px;padding:10px;border-radius:16px;
+    background:var(--panel-solid);border:1px solid var(--line);box-shadow:0 24px 60px -20px var(--shadow-deep);
+    opacity:0;pointer-events:none;transform:translateY(8px);transition:.2s;
+  }
+  .lang-float-wrap.open .lang-panel{opacity:1;pointer-events:auto;transform:translateY(0)}
+  .lang-panel-title{
+    font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--dim);padding:6px 10px 8px;
+  }
+  .lang-opt{
+    all:unset;cursor:pointer;display:flex;align-items:center;gap:10px;width:100%;box-sizing:border-box;
+    padding:10px;border-radius:10px;color:var(--ice);font-family:'Space Grotesk',sans-serif;font-size:14px;transition:.15s;
+  }
+  .lang-opt:hover{background:var(--glass-3)}
+  .lang-opt.active{background:rgba(255,122,47,.12);color:var(--glow-soft)}
+  .lang-flag{font-size:17px;line-height:1}
+
+  /* Suppresses Google's own translate banner/toolbar and body offset —
+     only our custom floating panel above should be visible as UI. */
+  .goog-te-banner-frame,.goog-te-gadget-icon,body>.skiptranslate{display:none!important}
+  body{top:0!important}
+
   /* drawer / modal */
   .overlay{
     position:fixed;inset:0;z-index:200;background:rgba(3,4,10,.85);backdrop-filter:blur(10px);
@@ -889,11 +1141,12 @@
   .drawer .sub{color:var(--dim);font-size:14px;line-height:1.6;margin-bottom:32px}
   .field{margin-bottom:20px}
   .field label{display:block;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--dim);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px}
-  .field select,.field input{
+  .field select,.field input,.field textarea{
     width:100%;background:var(--glass);border:1px solid var(--line);color:var(--ice);
     padding:14px 16px;border-radius:12px;font-size:15px;font-family:'Space Grotesk',sans-serif;transition:.2s;
   }
-  .field select:focus,.field input:focus{outline:none;border-color:var(--glow);background:rgba(255,122,47,.05);box-shadow:0 0 0 4px rgba(255,122,47,.1)}
+  .field textarea{resize:vertical;min-height:110px;line-height:1.6}
+  .field select:focus,.field input:focus,.field textarea:focus{outline:none;border-color:var(--glow);background:rgba(255,122,47,.05);box-shadow:0 0 0 4px rgba(255,122,47,.1)}
   .field-row{display:flex;gap:14px}
   .field-row .field{flex:1}
   .price-box{padding:20px 22px;border-radius:16px;margin:26px 0;background:linear-gradient(135deg,rgba(255,122,47,.12),rgba(255,122,47,.03));border:1px solid rgba(255,122,47,.25);display:flex;justify-content:space-between;align-items:center}
@@ -929,6 +1182,15 @@
     .trips-grid{grid-template-columns:repeat(2,1fr)}
     .trust-bar{grid-template-columns:repeat(2,1fr)}
     .reviews-grid{grid-template-columns:1fr}
+    .review-list{grid-template-columns:1fr}
+    .review-stat-band-inner{flex-direction:column;gap:28px}
+    .review-summary-score{border-right:none;padding-right:0;padding-bottom:28px;border-bottom:1px solid var(--line)}
+    .review-stat-metrics{gap:32px}
+    .review-card-head{flex-direction:column}
+    .review-card-meta{text-align:left}
+    .reviews-hero{padding-top:120px}
+    .reviews-hero-inner{align-items:flex-start}
+    .activity-row{gap:32px}
     .cta-band{grid-template-columns:1fr;padding:56px 36px}
     .footer-grid{grid-template-columns:1fr 1fr;gap:36px}
     .hero-stats{grid-template-columns:repeat(2,1fr)}
@@ -963,6 +1225,17 @@
 
   @media(max-width:640px){
     .trips-grid{grid-template-columns:1fr}
+    /* Alternating left/right only makes sense side-by-side — stacked on a
+       phone, every row reads text-then-image regardless of its position.
+       The even-row column-width override that keeps images the same size
+       on desktop (".activity-row:nth-child(even)") is more specific than a
+       plain ".activity-row", so it must be named again here to actually be
+       overridden on mobile rather than silently winning over this block. */
+    .activity-rows{gap:40px}
+    .activity-row,
+    .activity-row:nth-child(even){grid-template-columns:1fr;gap:18px}
+    .activity-row .activity-text{order:1}
+    .activity-row .activity-media{order:2}
     .hero{padding-bottom:180px}
     .hero-arrow{width:36px;height:36px}
     section{padding:90px 5vw}
@@ -973,6 +1246,8 @@
     body{padding-bottom:66px}
     .bottom-nav{display:grid}
     .wa-float{bottom:80px;right:18px;width:50px;height:50px}
+    .lang-float-wrap{bottom:142px;right:18px}
+    .lang-float{width:50px;height:50px}
     .trip-hero{min-height:460px;padding:120px 5vw 48px}
     .trip-hero-foot{gap:18px}
     .incl-col,.pricing-note{padding:22px}
@@ -1000,7 +1275,7 @@
     <div class="brand-mark">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="#1a0a00"><path d="m8 3 4 8 5-5 5 15H2L8 3z"/></svg>
     </div>
-    <div class="brand-name">Perfect Kilimanjaro<span>.</span></div>
+    <div class="brand-name notranslate">Perfect Kilimanjaro<span>.</span></div>
   </a>
   <div class="nav-links" id="navLinks"></div>
   <div class="nav-right">
@@ -1023,7 +1298,7 @@
         <div class="brand-mark">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="#1a0a00"><path d="m8 3 4 8 5-5 5 15H2L8 3z"/></svg>
         </div>
-        <div class="brand-name">Perfect Kilimanjaro<span>.</span></div>
+        <div class="brand-name notranslate">Perfect Kilimanjaro<span>.</span></div>
       </a>
       <p>Locally owned safari, Kilimanjaro and Zanzibar trips, run out of Arusha, Tanzania.</p>
       <div class="footer-social">
@@ -1051,19 +1326,50 @@
       <a href="{{ route('tours') }}">All Tours</a>
       <a href="{{ route('home') }}#about">About Us</a>
       <a onclick="openBooking()">Plan Your Trip</a>
-      <a href="https://wa.me/255712345678" target="_blank" rel="noopener">Contact</a>
+      <a href="https://wa.me/255752967222" target="_blank" rel="noopener">Contact</a>
       <a href="#">Privacy Policy</a>
     </div>
   </div>
   <div class="footer-bottom">
-    <div>© 2026 Safiri Tanzania. All rights reserved. · hello@safiri.co.tz · +255 712 345 678</div>
+    <div>© 2026 Safiri Tanzania. All rights reserved. · hello@safiri.co.tz · +255 752 967 222</div>
     <div>Arusha, Tanzania · 3°22'S · 36°41'E</div>
   </div>
 </footer>
 
-<a class="wa-float" href="https://wa.me/255712345678" target="_blank" rel="noopener" aria-label="Chat on WhatsApp">
+<a class="wa-float" href="https://wa.me/255752967222" target="_blank" rel="noopener" aria-label="Chat on WhatsApp">
   <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor"><path d="M12.01 2C6.48 2 2 6.48 2 12c0 1.85.5 3.58 1.36 5.07L2 22l5.06-1.33A9.94 9.94 0 0 0 12.01 22C17.52 22 22 17.52 22 12S17.52 2 12.01 2zm5.5 14.14c-.23.65-1.14 1.19-1.87 1.35-.5.11-1.15.19-3.35-.72-2.82-1.17-4.63-4.03-4.77-4.22-.14-.19-1.15-1.53-1.15-2.92 0-1.39.73-2.07.99-2.35.23-.25.5-.32.67-.32h.48c.15 0 .36-.06.56.43l.79 1.9c.09.19.15.42.03.67-.12.25-.18.4-.36.6l-.45.52c-.14.14-.29.29-.13.57.15.28.68 1.12 1.46 1.81 1 .89 1.82 1.17 2.11 1.3.23.1.51.08.68-.1l.62-.72c.24-.28.5-.24.79-.14l1.77.83c.28.14.48.21.55.33.07.12.07.7-.16 1.35z"/></svg>
 </a>
+
+{{-- Language switcher — drives Google's client-side website-translate engine
+     (see #lang-translate-script below) so every page, including database
+     content, is covered without hand-translating every string. --}}
+<div class="lang-float-wrap" id="langFloatWrap">
+  <button class="lang-float" id="langFloatBtn" aria-label="Change language" aria-haspopup="true" aria-expanded="false">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10Z"/></svg>
+  </button>
+  <div class="lang-panel notranslate" id="langPanel" role="menu">
+    <div class="lang-panel-title">Language</div>
+    <button class="lang-opt" role="menuitem" data-lang="en">
+      <span class="lang-flag">🇬🇧</span><span>English</span>
+    </button>
+    <button class="lang-opt" role="menuitem" data-lang="zh-CN">
+      <span class="lang-flag">🇨🇳</span><span>中文</span>
+    </button>
+    <button class="lang-opt" role="menuitem" data-lang="fr">
+      <span class="lang-flag">🇫🇷</span><span>Français</span>
+    </button>
+    <button class="lang-opt" role="menuitem" data-lang="it">
+      <span class="lang-flag">🇮🇹</span><span>Italiano</span>
+    </button>
+    <button class="lang-opt" role="menuitem" data-lang="es">
+      <span class="lang-flag">🇪🇸</span><span>Español</span>
+    </button>
+    <button class="lang-opt" role="menuitem" data-lang="ar">
+      <span class="lang-flag">🇸🇦</span><span>العربية</span>
+    </button>
+  </div>
+</div>
+<div id="google_translate_element" class="notranslate" style="display:none"></div>
 
 <nav class="bottom-nav" id="bottomNav">
   <button class="bn-item active" data-key="home" onclick="bnGo(this,()=>window.location.href='{{ route('home') }}')">
@@ -1115,7 +1421,7 @@
       <div class="brand-mark">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="#1a0a00"><path d="m8 3 4 8 5-5 5 15H2L8 3z"/></svg>
       </div>
-      <div class="brand-name">Perfect Kilimanjaro<span>.</span></div>
+      <div class="brand-name notranslate">Perfect Kilimanjaro<span>.</span></div>
     </div>
     <div id="mobileNavList"></div>
     <button class="btn btn-fill" style="width:100%;justify-content:center;margin-top:24px" onclick="closeMobileNav();openBooking()">
@@ -1439,7 +1745,76 @@ async function submitBooking(e){
     btn.textContent = 'Request this trip →';
   }
 }
+
+/* ---- Language switcher ----
+   Drives Google's client-side website-translate engine (loaded below via
+   googleTranslateElementInit) rather than hand-translated strings, so every
+   page — including package, review and admin-edited homepage content pulled
+   from the database — is covered without maintaining per-string translations. */
+const LANG_NAMES = { en:'English', 'zh-CN':'中文', fr:'Français', it:'Italiano', es:'Español', ar:'العربية' };
+
+function currentGoogTransLang(){
+  const m = document.cookie.match(/googtrans=\/en\/([a-zA-Z-]+)/);
+  return m ? m[1] : 'en';
+}
+
+function markActiveLangOpt(){
+  const active = currentGoogTransLang();
+  document.querySelectorAll('.lang-opt').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.lang === active);
+  });
+}
+
+function setSiteLanguage(lang){
+  if (lang === 'en') {
+    document.cookie = 'googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+    document.cookie = 'googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;domain=' + location.hostname + ';';
+    location.reload();
+    return;
+  }
+
+  document.cookie = 'googtrans=/en/' + lang + '; path=/';
+
+  const combo = document.querySelector('select.goog-te-combo');
+  if (combo) {
+    combo.value = lang;
+    combo.dispatchEvent(new Event('change'));
+    markActiveLangOpt();
+  } else {
+    // Translate widget script hasn't finished loading yet — the cookie above
+    // is enough for it to pick the language up once it initializes on reload.
+    location.reload();
+  }
+}
+
+const langFloatWrap = document.getElementById('langFloatWrap');
+const langFloatBtn = document.getElementById('langFloatBtn');
+if (langFloatBtn) {
+  langFloatBtn.addEventListener('click', () => {
+    const open = langFloatWrap.classList.toggle('open');
+    langFloatBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+  document.querySelectorAll('.lang-opt').forEach(btn => {
+    btn.addEventListener('click', () => setSiteLanguage(btn.dataset.lang));
+  });
+  document.addEventListener('click', (e) => {
+    if (!langFloatWrap.contains(e.target)) {
+      langFloatWrap.classList.remove('open');
+      langFloatBtn.setAttribute('aria-expanded', 'false');
+    }
+  });
+  markActiveLangOpt();
+}
+
+function googleTranslateElementInit(){
+  new google.translate.TranslateElement({
+    pageLanguage: 'en',
+    includedLanguages: 'zh-CN,fr,it,es,ar',
+    autoDisplay: false,
+  }, 'google_translate_element');
+}
 </script>
+<script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit" async></script>
 @stack('scripts')
 </body>
 </html>
