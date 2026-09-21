@@ -19,20 +19,85 @@
   </div>
 
   <div class="hero-stats">
-    <div class="stat"><div class="stat-num">3</div><div class="stat-label">Ways to explore</div></div>
-    <div class="stat"><div class="stat-num">180<em>+</em></div><div class="stat-label">Trips run</div></div>
-    <div class="stat"><div class="stat-num">4.9<em>★</em></div><div class="stat-label">Average rating</div></div>
-    <div class="stat"><div class="stat-num">&lt;1<em>hr</em></div><div class="stat-label">Reply time</div></div>
+    @foreach ($home->hero_stats as $stat)
+      <div class="stat"><div class="stat-num">{{ $stat['num'] }}@if(!empty($stat['suffix']))<em>{{ $stat['suffix'] }}</em>@endif</div><div class="stat-label">{{ $stat['label'] }}</div></div>
+    @endforeach
   </div>
 </header>
 
+<section id="intro">
+  <div class="wrap intro-wrap reveal">
+    <div class="tag">{{ $home->intro_tag }}</div>
+    <h2 class="section-title">{!! $home->intro_title !!}</h2>
+    <div class="intro-copy">
+      @foreach ($home->intro_paragraphs as $paragraph)
+        <p>{!! $paragraph !!}</p>
+      @endforeach
+    </div>
+  </div>
+</section>
+
 <section id="pillars">
   <div class="wrap">
-    <div class="tag">What we run</div>
-    <h2 class="section-title">Three trips. <em>One local team.</em></h2>
-    <p class="section-lede">No third party brokers every itinerary below is planned and led by our own Tanzanian guides and crews.</p>
+    <div class="tag">{{ $home->pillars_tag }}</div>
+    <h2 class="section-title">{!! $home->pillars_title !!}</h2>
+    <p class="section-lede">{{ $home->pillars_lede }}</p>
 
     <div class="pillars-grid" id="pillarsGrid"></div>
+  </div>
+</section>
+
+<section id="routes">
+  <div class="wrap">
+    <div class="tag">{{ $home->routes_tag }}</div>
+    <h2 class="section-title">{!! $home->routes_title !!}</h2>
+    <p class="section-lede">{{ $home->routes_lede }}</p>
+
+    <div class="route-explorer">
+      <div class="route-stats-row" id="routeStatsRow"></div>
+      <div class="route-explorer-panel">
+        <nav class="route-nav" id="routeNav" role="tablist" aria-label="Kilimanjaro routes"></nav>
+        <div>
+          <div class="route-map-card">
+            <div class="route-map-legend">
+              <span><svg viewBox="0 0 20 8"><line x1="0" y1="4" x2="20" y2="4" stroke="#20261f" stroke-width="2" stroke-dasharray="3 3"/></svg>Ascent</span>
+              <span><svg viewBox="0 0 20 8"><line x1="0" y1="4" x2="20" y2="4" stroke="#3f6b4a" stroke-width="2" stroke-dasharray="3 3"/></svg>Descent</span>
+            </div>
+            <svg id="kiliMap" viewBox="60 150 680 510" xmlns="http://www.w3.org/2000/svg"></svg>
+          </div>
+
+          <div class="route-desc-card">
+            <h3>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>
+              <span id="routeDescTitle"></span>
+            </h3>
+            <div class="route-desc-meta" id="routeDescMeta"></div>
+            <p id="routeDescText"></p>
+            <a class="route-view" id="routeViewLink" href="#">
+              View the full itinerary
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </a>
+          </div>
+          <p class="route-note">Elevations and camp order are approximate — your booked itinerary is the one that governs.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="equip-banner">
+      <div class="equip-glow"></div>
+      <div class="equip-icon">
+        <span class="equip-icon-label">PDF</span>
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M6 8V6a4 4 0 0 1 8 0v2M4 8h16l-1 13H5L4 8Z"/><path d="M9 12v4M15 12v4"/></svg>
+      </div>
+      <div class="equip-body">
+        <h3>{{ $home->equip_title }}</h3>
+        <p>{{ $home->equip_description }}</p>
+        <a class="btn btn-fill equip-download" href="{{ asset($home->equip_pdf) }}" download>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v13m0 0-4-4m4 4 4-4M4 19h16"/></svg>
+          Download checklist
+        </a>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -40,9 +105,9 @@
   <div class="wrap">
     <div class="trips-head">
       <div>
-        <div class="tag">Trips &amp; pricing</div>
-        <h2 class="section-title" style="margin-bottom:8px">Pick your <em>adventure</em></h2>
-        <p class="section-lede">All prices are per person, land cost only — park fees, guides, camps and meals on the trip included.</p>
+        <div class="tag">{{ $home->trips_tag }}</div>
+        <h2 class="section-title" style="margin-bottom:8px">{!! $home->trips_title !!}</h2>
+        <p class="section-lede">{{ $home->trips_lede }}</p>
       </div>
       <div class="tabs" id="tabs"></div>
     </div>
@@ -61,78 +126,84 @@
     <div class="tag">Field notes</div>
     <h2 class="section-title">What <em>travelers</em> say</h2>
     <div class="reviews-grid">
-      <div class="review">
-        <div class="review-stars">★★★★★</div>
-        <p>"Our guide rerouted us around a migration crossing three days before we arrived — something no brochure could have known. Best safari of our lives."</p>
-        <div class="review-who">
-          <div class="review-avatar">JM</div>
-          <div><strong>Julia M.</strong><span>Northern Circuit Safari</span></div>
+      @forelse ($featuredReviews as $review)
+        <div class="review">
+          <div class="review-stars">{{ str_repeat('★', $review->rating) }}{{ str_repeat('☆', 5 - $review->rating) }}</div>
+          <p>&quot;{{ $review->body }}&quot;</p>
+          <div class="review-who">
+            <div class="review-avatar">{{ $review->initials() }}</div>
+            <div><strong>{{ $review->name }}</strong><span>{{ $review->package->name ?? 'Perfect Kilimanjaro' }}</span></div>
+          </div>
         </div>
-      </div>
-      <div class="review">
-        <div class="review-stars">★★★★★</div>
-        <p>"Summited via Lemosho with a crew that clearly knew what they were doing. Honest about pacing, never rushed us, and the food on the mountain was shockingly good."</p>
-        <div class="review-who">
-          <div class="review-avatar">DK</div>
-          <div><strong>Daniel K.</strong><span>Kilimanjaro · Lemosho</span></div>
+      @empty
+        <p class="section-lede">Be the first to leave a review.</p>
+      @endforelse
+    </div>
+    <a class="section-more-link" href="{{ route('reviews.index') }}">
+      Read all reviews
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+    </a>
+  </div>
+</section>
+
+<section id="activities">
+  <div class="wrap">
+    <div class="tag">{{ $home->activities_tag }}</div>
+    <h2 class="section-title">{!! $home->activities_title !!}</h2>
+    <p class="section-lede">{{ $home->activities_lede }}</p>
+
+    <div class="activity-rows">
+      @foreach ($home->activities as $activity)
+        <div class="activity-row">
+          <div class="activity-media">
+            <img src="{{ asset($activity['image']) }}" alt="{{ $activity['title'] }}" loading="lazy">
+            <div class="trip-tag-overlay">{{ $activity['tag'] }}</div>
+          </div>
+          <div class="activity-text">
+            <div class="activity-eyebrow">{{ $activity['eyebrow'] }}</div>
+            <h3>{{ $activity['title'] }}</h3>
+            <p>{{ $activity['text'] }}</p>
+          </div>
         </div>
-      </div>
-      <div class="review">
-        <div class="review-stars">★★★★★</div>
-        <p>"Stone Town, spice farms, then three days doing nothing on a beach that looked unreal in every photo. Booking on WhatsApp was refreshingly simple."</p>
-        <div class="review-who">
-          <div class="review-avatar">AR</div>
-          <div><strong>Amara R.</strong><span>Zanzibar Beach Escape</span></div>
-        </div>
-      </div>
+      @endforeach
     </div>
   </div>
 </section>
 
 <section id="about">
   <div class="wrap">
-    <div class="tag">About us</div>
-    <h2 class="section-title">Run by the people <em>on the ground</em></h2>
-    <p class="section-lede">Safiri is a small Arusha-based team, not a booking platform reselling someone else's itinerary.</p>
+    <div class="tag">{{ $home->about_tag }}</div>
+    <h2 class="section-title">{!! $home->about_title !!}</h2>
+    <p class="section-lede">{{ $home->about_lede }}</p>
 
     <div class="about-grid">
       <div class="about-block">
-        <h3>Our story</h3>
-        <p>Started by guides who spent years leading trips for foreign-owned operators and wanted travelers to see more of what they were actually paying for. We plan every itinerary in-house and work only with crews we know personally.</p>
+        <h3>{{ $home->about_story_title }}</h3>
+        <p>{{ $home->about_story_text }}</p>
       </div>
       <div class="about-block">
-        <h3>Our team</h3>
-        <p>A dozen safari guides, six Kilimanjaro crew leads, and a small Zanzibar-based team — all Tanzanian, all full-time, and all paid above the standard park-wage rates.</p>
+        <h3>{{ $home->about_team_title }}</h3>
+        <p>{{ $home->about_team_text }}</p>
       </div>
     </div>
 
     <div id="faq" class="faq-list">
-      <div class="faq-item">
-        <button class="faq-q" onclick="toggleFaq(this)">Do I need a visa to visit Tanzania?
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
-        </button>
-        <div class="faq-a"><p>Most nationalities can get an e-visa online before arrival, or a visa on arrival at Kilimanjaro International Airport. We send exact instructions once your trip is booked.</p></div>
-      </div>
-      <div class="faq-item">
-        <button class="faq-q" onclick="toggleFaq(this)">When's the best time to see the migration?
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
-        </button>
-        <div class="faq-a"><p>River crossings typically run July–October in the northern Serengeti; calving season is January–March in the south. We track current herd positions and adjust your route accordingly.</p></div>
-      </div>
-      <div class="faq-item">
-        <button class="faq-q" onclick="toggleFaq(this)">Are these trips suitable for families?
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
-        </button>
-        <div class="faq-a"><p>Yes — safaris and Zanzibar trips work well for all ages. Kilimanjaro climbs are better suited to kids 12+ who've done some hiking before.</p></div>
-      </div>
+      @foreach ($home->faqs as $faq)
+        <div class="faq-item">
+          <button class="faq-q" onclick="toggleFaq(this)">{{ $faq['question'] }}
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+          </button>
+          <div class="faq-a"><p>{{ $faq['answer'] }}</p></div>
+        </div>
+      @endforeach
     </div>
   </div>
 </section>
 
 <div class="cta-band">
   <div>
-    <h3>Not sure which trip <em>fits you?</em></h3>
-    <p>Tell us your dates, budget and what you want to see — we'll match you to the right itinerary and send a day-by-day plan.</p>
+    <h3>{!! $home->cta_title !!}</h3>
+    <p>{{ $home->cta_text }}</p>
   </div>
   <div class="cta-band-right">
     <div class="cta-stat">
@@ -157,6 +228,7 @@
 @endsection
 
 @push('scripts')
+@include('partials.kili-map-data')
 <script>
 const PILLARS = [
   { cat:"safari", icon:'<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 20h20M4 20 9 9l3 5 2-3 4 9"/><circle cx="18" cy="5" r="2"/></svg>',
@@ -180,6 +252,53 @@ document.getElementById('pillarsGrid').innerHTML = PILLARS.map(p => `
     </div>
   </div>
 `).join('');
+
+/* ---- Kilimanjaro route explorer ----
+   An illustrated map, not a data-driven view: waypoint positions and each
+   route's text are fixed reference content (approximate — see the on-page
+   note), unlike the rest of the site which reads live from the database.
+   "View the full itinerary" only appears for the three routes we actually
+   guide, matched against real packages by slug. */
+const KILI_MAP_ROUTES = TRIPS.filter(t => t.category === 'kilimanjaro');
+
+const kiliMapEl = document.getElementById("kiliMap");
+const kiliNavEl = document.getElementById("routeNav");
+const kiliStatsRow = document.getElementById("routeStatsRow");
+
+function renderKiliRoute(routeId){
+  const route = KILI_ROUTE_DEFS.find(r => r.id === routeId);
+
+  kiliNavEl.innerHTML = KILI_ROUTE_DEFS.map(r => `
+    <button role="tab" aria-selected="${r.id === routeId}" data-id="${r.id}">
+      <span class="dot"></span>${r.name}<span class="sub">${r.days}</span>
+    </button>`).join('');
+  kiliNavEl.querySelectorAll('button').forEach(btn => {
+    btn.addEventListener('click', () => renderKiliRoute(btn.dataset.id));
+  });
+
+  kiliStatsRow.innerHTML = `
+    <div class="route-stat-pill">Duration<b>${route.days}</b></div>
+    <div class="route-stat-pill">Difficulty<b style="color:${kiliDifficultyColor(route.difficulty)}">${route.difficulty}</b></div>
+    <div class="route-stat-pill">Camps<b>${route.ascent.length + route.descent.length - 2}</b></div>`;
+
+  document.getElementById('routeDescTitle').textContent = route.name;
+  document.getElementById('routeDescMeta').textContent = `${route.days} · ${route.difficulty} difficulty · summits at Uhuru Peak, 5,895 m`;
+  document.getElementById('routeDescText').textContent = route.text;
+
+  // Only the routes we actually guide get a link through to a real package.
+  const booked = KILI_MAP_ROUTES.find(t => t.id === route.id);
+  const viewLink = document.getElementById('routeViewLink');
+  if (booked) {
+    viewLink.style.display = '';
+    viewLink.href = '/' + booked.id;
+  } else {
+    viewLink.style.display = 'none';
+  }
+
+  kiliMapEl.innerHTML = kiliBuildMapSvg(route);
+  kiliAnimateRoutePaths(kiliMapEl);
+}
+if (kiliMapEl) renderKiliRoute('machame');
 
 document.getElementById('tabs').innerHTML = Object.entries(CATS).map(([key,c]) => `
   <button class="tab" data-cat="${key}" onclick="setTab('${key}')">${c.label}</button>
