@@ -131,6 +131,27 @@
 
       @endif
 
+      {{-- Route map (Kilimanjaro routes only) --}}
+      @if ($trip['category'] === 'kilimanjaro')
+      <div class="art-section" id="tripRouteMapSection" style="display:none">
+        <h2>
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 20l-5.5-2.5V4L9 6.5m0 13.5 6-2.5m-6 2.5V6.5m6 11L20.5 20V6.5L15 4m0 13.5V4m0 0L9 6.5"/></svg>
+          Route map
+        </h2>
+        <div class="route-explorer" style="margin-top:0">
+          <div class="route-stats-row" id="tripRouteStats"></div>
+          <div class="route-map-card">
+            <div class="route-map-legend">
+              <span><svg viewBox="0 0 20 8"><line x1="0" y1="4" x2="20" y2="4" stroke="#20261f" stroke-width="2" stroke-dasharray="3 3"/></svg>Ascent</span>
+              <span><svg viewBox="0 0 20 8"><line x1="0" y1="4" x2="20" y2="4" stroke="#3f6b4a" stroke-width="2" stroke-dasharray="3 3"/></svg>Descent</span>
+            </div>
+            <svg id="tripKiliMap" viewBox="60 150 680 510" xmlns="http://www.w3.org/2000/svg"></svg>
+          </div>
+          <p class="route-note">Elevations and camp order are approximate — your booked itinerary is the one that governs.</p>
+        </div>
+      </div>
+      @endif
+
       {{-- Where you'll stay --}}
       @if (filled($trip['stays']))
       <div class="art-section">
@@ -300,7 +321,7 @@
               Book this adventure
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
             </button>
-            <a class="btn btn-line" href="https://wa.me/255712345678" target="_blank" rel="noopener">Ask a question</a>
+            <a class="btn btn-line" href="https://wa.me/255752967222" target="_blank" rel="noopener">Ask a question</a>
           </div>
 
           <p class="book-fine">No payment taken online — we confirm availability first.</p>
@@ -318,7 +339,7 @@
               Book this {{ $catMeta['noun'] }}
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
             </button>
-            <a class="btn btn-line" href="https://wa.me/255712345678" target="_blank" rel="noopener">
+            <a class="btn btn-line" href="https://wa.me/255752967222" target="_blank" rel="noopener">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12.01 2C6.48 2 2 6.48 2 12c0 1.85.5 3.58 1.36 5.07L2 22l5.06-1.33A9.94 9.94 0 0 0 12.01 22C17.52 22 22 17.52 22 12S17.52 2 12.01 2zm5.5 14.14c-.23.65-1.14 1.19-1.87 1.35-.5.11-1.15.19-3.35-.72-2.82-1.17-4.63-4.03-4.77-4.22-.14-.19-1.15-1.53-1.15-2.92 0-1.39.73-2.07.99-2.35.23-.25.5-.32.67-.32h.48c.15 0 .36-.06.56.43l.79 1.9c.09.19.15.42.03.67-.12.25-.18.4-.36.6l-.45.52c-.14.14-.29.29-.13.57.15.28.68 1.12 1.46 1.81 1 .89 1.82 1.17 2.11 1.3.23.1.51.08.68-.1l.62-.72c.24-.28.5-.24.79-.14l1.77.83c.28.14.48.21.55.33.07.12.07.7-.16 1.35z"/></svg>
               Ask on WhatsApp
             </a>
@@ -372,6 +393,28 @@
     </div>
   </div>
 </section>
+@endif
+
+@if ($trip['category'] === 'kilimanjaro')
+@push('scripts')
+@include('partials.kili-map-data')
+<script>
+(function(){
+  const mapEl = document.getElementById('tripKiliMap');
+  const route = KILI_ROUTE_DEFS.find(r => r.id === @json($trip['id']));
+  if (!mapEl || !route) return;
+
+  document.getElementById('tripRouteMapSection').style.display = '';
+  document.getElementById('tripRouteStats').innerHTML = `
+    <div class="route-stat-pill">Duration<b>${route.days}</b></div>
+    <div class="route-stat-pill">Difficulty<b style="color:${kiliDifficultyColor(route.difficulty)}">${route.difficulty}</b></div>
+    <div class="route-stat-pill">Camps<b>${route.ascent.length + route.descent.length - 2}</b></div>`;
+
+  mapEl.innerHTML = kiliBuildMapSvg(route);
+  kiliAnimateRoutePaths(mapEl);
+})();
+</script>
+@endpush
 @endif
 
 @endsection
