@@ -3,6 +3,7 @@
 use App\Http\Controllers\InquiryController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\TripController;
+use App\Models\AboutContent;
 use App\Models\HomeContent;
 use App\Models\Package;
 use App\Models\Review;
@@ -21,9 +22,18 @@ Route::get('/tours', function () {
 })->name('tours');
 
 // Declared before the catch-all "/{trip}" route below, which would
-// otherwise swallow "/reviews" as if it were a package slug.
+// otherwise swallow "/reviews" (and "/about", "/team") as if they were
+// package slugs.
 Route::get('/reviews', [ReviewController::class, 'index'])->name('reviews.index');
 Route::post('/reviews', [ReviewController::class, 'store'])->name('reviews.store');
+
+Route::get('/about', function () {
+    return view('about', ['about' => AboutContent::current()]);
+})->name('about');
+
+Route::get('/team', function () {
+    return view('team', ['about' => AboutContent::current()]);
+})->name('team');
 
 Route::post('/inquiries', [InquiryController::class, 'store'])->name('inquiries.store');
 
