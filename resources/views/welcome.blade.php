@@ -170,6 +170,36 @@
   </div>
 </section>
 
+@if (filled($home->video_youtube_id))
+<section id="video">
+  <div class="wrap">
+    <div class="tag">{{ $home->video_tag }}</div>
+    <h2 class="section-title">{!! $home->video_title !!}</h2>
+
+    <div class="video-card" id="videoCard" data-yt="{{ $home->video_youtube_id }}" onclick="playPageVideo()">
+      <img class="video-thumb" src="https://img.youtube.com/vi/{{ $home->video_youtube_id }}/maxresdefault.jpg" alt="{{ strip_tags($home->video_title) }}" loading="lazy">
+      <div class="video-scrim"></div>
+      <div class="video-channel">
+        <div class="brand-mark">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="#1a0a00"><path d="m8 3 4 8 5-5 5 15H2L8 3z"/></svg>
+        </div>
+        <div class="video-channel-text">
+          <strong class="notranslate">Perfect Kilimanjaro</strong>
+          <span>Tanzania Safaris, Kilimanjaro &amp; Zanzibar</span>
+        </div>
+      </div>
+      <button class="video-play" aria-label="Play video">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+      </button>
+      <span class="video-yt-badge">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8ZM9.6 15.5v-7l6.3 3.5-6.3 3.5Z"/></svg>
+        Watch on YouTube
+      </span>
+    </div>
+  </div>
+</section>
+@endif
+
 <section id="about">
   <div class="wrap">
     <div class="tag">{{ $home->about_tag }}</div>
