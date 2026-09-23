@@ -102,6 +102,7 @@ class Package extends Model
             'excluded' => $this->excluded ?? [],
             'gallery' => $this->gallery ?? [],
             'itinerary' => $this->itinerary ?? [],
+            'video_youtube_id' => $this->video_youtube_id,
             'stays' => $this->stayArrays(),
         ];
     }
