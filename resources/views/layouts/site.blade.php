@@ -449,6 +449,23 @@
   .intro-copy p{margin:0}
   .intro-copy strong{color:var(--ice);font-weight:500}
 
+  /* /team page — team member grid */
+  .team-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:24px}
+  .team-card{
+    background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:26px 22px;text-align:center;
+  }
+  .team-photo{
+    width:88px;height:88px;border-radius:50%;object-fit:cover;margin:0 auto 16px;display:block;
+  }
+  .team-photo-fallback{
+    display:flex;align-items:center;justify-content:center;
+    background:linear-gradient(135deg,var(--sun),var(--glow));color:#1a0a00;
+    font-family:'Syne',sans-serif;font-weight:700;font-size:26px;
+  }
+  .team-name{font-family:'Syne',sans-serif;font-weight:700;font-size:16px;margin-bottom:3px}
+  .team-role{color:var(--glow-soft);font-size:12px;font-family:'JetBrains Mono',monospace;letter-spacing:.04em;margin-bottom:12px}
+  .team-bio{color:var(--dim);font-size:13.5px;line-height:1.6}
+
   /* pillars */
   .pillars-grid{
     display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:64px;
@@ -1043,6 +1060,42 @@
   .activity-text h3{font-family:'Syne',sans-serif;font-weight:700;font-size:clamp(22px,2.4vw,30px);letter-spacing:-.02em;margin-bottom:14px}
   .activity-text p{color:var(--dim);font-size:15px;line-height:1.75;max-width:46ch}
 
+  /* homepage "glimpse" video — a click-to-load YouTube facade rather than an
+     embedded iframe on first paint, so the page isn't loading YouTube's
+     player for visitors who never press play. */
+  #video{padding-top:0}
+  .video-card{
+    position:relative;margin-top:8px;border-radius:24px;overflow:hidden;aspect-ratio:16/9;
+    background:#000;box-shadow:0 30px 70px -30px rgba(0,0,0,.7);cursor:pointer;
+  }
+  .video-thumb{width:100%;height:100%;object-fit:cover;display:block}
+  .video-scrim{position:absolute;inset:0;background:linear-gradient(180deg,rgba(3,4,10,.55) 0%,rgba(3,4,10,.1) 32%,rgba(3,4,10,.7) 100%)}
+  .video-channel{
+    position:absolute;top:18px;left:18px;display:flex;align-items:center;gap:10px;
+    background:rgba(5,7,13,.55);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+    padding:6px 16px 6px 6px;border-radius:100px;border:1px solid rgba(255,255,255,.14);
+  }
+  .video-channel-text{display:flex;flex-direction:column;line-height:1.3}
+  .video-channel-text strong{font-family:'Syne',sans-serif;font-size:13.5px;color:#fff}
+  .video-channel-text span{font-size:10.5px;color:var(--dim)}
+  .video-play{
+    all:unset;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+    width:74px;height:74px;border-radius:50%;cursor:pointer;
+    background:linear-gradient(135deg,var(--sun),var(--glow));color:#1a0a00;
+    display:flex;align-items:center;justify-content:center;box-shadow:0 10px 40px rgba(255,122,47,.5);
+    transition:.25s;
+  }
+  .video-play svg{margin-left:4px}
+  .video-card:hover .video-play{transform:translate(-50%,-50%) scale(1.08)}
+  .video-yt-badge{
+    position:absolute;bottom:18px;right:18px;display:flex;align-items:center;gap:7px;
+    background:rgba(5,7,13,.6);backdrop-filter:blur(8px);color:#fff;
+    font-family:'Space Grotesk',sans-serif;font-size:12.5px;font-weight:500;
+    padding:8px 14px;border-radius:100px;border:1px solid rgba(255,255,255,.14);
+  }
+  .video-card-playing{cursor:default}
+  .video-card-playing iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+
   /* cta band */
   .cta-band{
     margin:0 5vw 120px;padding:70px 56px;border-radius:32px;
@@ -1614,6 +1667,14 @@ function goAbout(anchor){
 
 function toggleFaq(btn){ btn.parentElement.classList.toggle('open'); }
 function toggleItin(btn){ btn.parentElement.classList.toggle('open'); }
+
+/* Click-to-load YouTube facade shared by the homepage's "glimpse" video and
+   each package page's video — only one #videoCard exists per page. */
+function playPageVideo(){
+  const card = document.getElementById('videoCard');
+  const id = card.dataset.yt;
+  card.outerHTML = `<div class="video-card video-card-playing"><iframe src="https://www.youtube.com/embed/${id}?autoplay=1&rel=0" title="Video" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>`;
+}
 
 /* ---- gallery lightbox ---- */
 let lbImages = [];
