@@ -180,6 +180,20 @@ class HomePageContent extends Page
                                     ]),
                             ]),
 
+                        Tab::make('Video')
+                            ->schema([
+                                Section::make('"Take a glimpse" section')
+                                    ->description('Shown below the activities. Hidden from the site entirely until a video ID is set.')
+                                    ->schema([
+                                        TextInput::make('video_tag')->label('Eyebrow tag')->maxLength(60),
+                                        TextInput::make('video_title')->label('Heading')->required()->maxLength(200),
+                                        TextInput::make('video_youtube_id')
+                                            ->label('YouTube video ID')
+                                            ->maxLength(20)
+                                            ->helperText('The id from the video\'s URL — e.g. for youtube.com/watch?v=dQw4w9WgXcQ, that\'s "dQw4w9WgXcQ".'),
+                                    ]),
+                            ]),
+
                         Tab::make('About & FAQ')
                             ->schema([
                                 Section::make('Section heading')

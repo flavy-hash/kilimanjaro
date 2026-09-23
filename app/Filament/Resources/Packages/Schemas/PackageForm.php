@@ -253,6 +253,15 @@ class PackageForm
                             ->helperText('Three photos works best — they render as a grid with a lightbox.'),
                     ]),
 
+                Section::make('Video')
+                    ->description('Shown as a "watch first" card on the package page. Left blank, the page shows no video.')
+                    ->schema([
+                        TextInput::make('video_youtube_id')
+                            ->label('YouTube video ID')
+                            ->maxLength(20)
+                            ->helperText('The id from the video\'s URL — e.g. for youtube.com/watch?v=dQw4w9WgXcQ, that\'s "dQw4w9WgXcQ".'),
+                    ]),
+
                 Section::make('Included & not included')
                     ->columns(2)
                     ->schema([
