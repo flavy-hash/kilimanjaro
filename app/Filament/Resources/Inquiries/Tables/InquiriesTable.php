@@ -88,7 +88,7 @@ class InquiriesTable
                         Action::make('email')
                             ->label('Email customer')
                             ->icon('heroicon-m-envelope')
-                            ->url(fn (Inquiry $record) => 'mailto:'.$record->email.'?subject='.rawurlencode('Your Safiri enquiry '.$record->reference))
+                            ->url(fn (Inquiry $record) => 'mailto:'.$record->email.'?subject='.rawurlencode('Your Perfect Kilimanjaro enquiry '.$record->reference))
                             ->openUrlInNewTab(),
 
                         DeleteAction::make(),

@@ -57,10 +57,36 @@ class HomePageContent extends Page
                 Tabs::make('Homepage')
                     ->persistTabInQueryString()
                     ->tabs([
-                        Tab::make('Hero stats')
+                        Tab::make('Hero')
                             ->schema([
+                                Section::make('Hero video & content')
+                                    ->description('The full-bleed video background at the very top of the homepage.')
+                                    ->schema([
+                                        FileUpload::make('hero_video')
+                                            ->label('Background video')
+                                            ->disk('site')
+                                            ->directory('videos')
+                                            ->visibility('public')
+                                            ->acceptedFileTypes(['video/mp4'])
+                                            ->maxSize(102400)
+                                            ->helperText('MP4, ideally under ~30MB and no audio needed — it autoplays muted on loop (max 100MB). Leave blank to fall back to the photo below.')
+                                            ->columnSpanFull(),
+                                        FileUpload::make('hero_poster')
+                                            ->label('Fallback / poster photo')
+                                            ->image()
+                                            ->disk('site')
+                                            ->directory('images')
+                                            ->visibility('public')
+                                            ->imageEditor()
+                                            ->helperText('Shown while the video loads, and instead of it if none is set.')
+                                            ->columnSpanFull(),
+                                        TextInput::make('hero_region')->label('Region badge')->maxLength(60),
+                                        TextInput::make('hero_headline')->label('Headline')->required()->maxLength(100),
+                                        TextInput::make('hero_subtitle')->label('Subtitle')->maxLength(150),
+                                    ]),
+
                                 Section::make('Stat band')
-                                    ->description('The four numbers under the hero slider.')
+                                    ->description('The four numbers under the hero video.')
                                     ->schema([
                                         Repeater::make('hero_stats')
                                             ->hiddenLabel()
@@ -86,6 +112,14 @@ class HomePageContent extends Page
                                         TextInput::make('intro_tag')->label('Eyebrow tag')->maxLength(60),
                                         TextInput::make('intro_title')->label('Heading')->required()->maxLength(200)
                                             ->helperText('HTML like <em>…</em> is allowed for the italic word.'),
+                                        FileUpload::make('intro_image')
+                                            ->label('Photo (shown beside the text)')
+                                            ->image()
+                                            ->disk('site')
+                                            ->directory('images')
+                                            ->visibility('public')
+                                            ->imageEditor()
+                                            ->columnSpanFull(),
                                         Repeater::make('intro_paragraphs')
                                             ->label('Paragraphs')
                                             ->simple(
@@ -94,6 +128,36 @@ class HomePageContent extends Page
                                             ->addActionLabel('Add paragraph')
                                             ->reorderable()
                                             ->helperText('<strong>…</strong> is allowed for bold route/park names.'),
+                                        TextInput::make('intro_cta_label')
+                                            ->label('Button text')
+                                            ->maxLength(60)
+                                            ->helperText('Leave blank to hide the button. Links to the Tours page.'),
+                                    ]),
+                            ]),
+
+                        Tab::make('Why us')
+                            ->schema([
+                                Section::make('"Why Perfect Kilimanjaro" section')
+                                    ->description('Shown right after "Who we are".')
+                                    ->schema([
+                                        TextInput::make('why_tag')->label('Eyebrow tag')->maxLength(60),
+                                        TextInput::make('why_title')->label('Heading')->required()->maxLength(200)
+                                            ->helperText('HTML like <em>…</em> is allowed for the italic word.'),
+                                        Textarea::make('why_lede')->label('Subheading')->rows(2)->maxLength(400),
+                                    ]),
+
+                                Section::make('Reasons')
+                                    ->schema([
+                                        Repeater::make('why_items')
+                                            ->hiddenLabel()
+                                            ->schema([
+                                                TextInput::make('title')->required()->maxLength(60),
+                                                Textarea::make('text')->rows(2)->required()->maxLength(300),
+                                            ])
+                                            ->addActionLabel('Add reason')
+                                            ->reorderable()
+                                            ->itemLabel(fn (array $state): ?string => $state['title'] ?? null)
+                                            ->collapsible(),
                                     ]),
                             ]),
 
