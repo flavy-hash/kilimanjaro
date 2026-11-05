@@ -10,7 +10,7 @@
  * Optional: &root=folder-name  if several Laravel copies live in your home dir.
  */
 
-const TOKEN = '8c75742ebad5100af4ec66f415b7c55eb48e3e42';
+const TOKEN = '';
 
 if (! hash_equals(TOKEN, (string) ($_GET['token'] ?? ''))) {
     http_response_code(404);
