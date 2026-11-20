@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Inquiries\Tables;
 
+use App\Filament\Resources\Quotes\QuoteResource;
 use App\Models\Inquiry;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
@@ -79,6 +80,12 @@ class InquiriesTable
                 ActionGroup::make([
                     ViewAction::make(),
                     EditAction::make(),
+
+                    Action::make('createQuote')
+                        ->label('Create quote')
+                        ->icon('heroicon-m-document-currency-dollar')
+                        ->color('success')
+                        ->url(fn (Inquiry $record) => QuoteResource::getUrl('create', ['inquiry' => $record->id])),
 
                     // Statuses as one-click items, grouped inside the same menu.
                     ActionGroup::make(self::statusActions())
