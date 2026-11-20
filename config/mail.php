@@ -115,4 +115,16 @@ return [
         'name' => env('MAIL_FROM_NAME', env('APP_NAME', 'Laravel')),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Inquiry Notification Address
+    |--------------------------------------------------------------------------
+    |
+    | Where a copy of every new booking inquiry submitted on the public site
+    | is sent, in addition to being stored in the database.
+    |
+    */
+
+    'inquiry_notify' => env('INQUIRY_NOTIFY_EMAIL', 'info@perfectkilimanjaro.com'),
+
 ];

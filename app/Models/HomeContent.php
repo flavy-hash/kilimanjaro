@@ -18,6 +18,7 @@ class HomeContent extends Model
     protected $casts = [
         'hero_stats' => 'array',
         'intro_paragraphs' => 'array',
+        'why_items' => 'array',
         'activities' => 'array',
         'faqs' => 'array',
     ];
@@ -31,6 +32,12 @@ class HomeContent extends Model
     public static function defaults(): array
     {
         return [
+            'hero_video' => null,
+            'hero_poster' => 'images/hero-kilimanjaro.jpg',
+            'hero_region' => 'Kilimanjaro Region',
+            'hero_headline' => 'Mount Kilimanjaro',
+            'hero_subtitle' => "Africa's rooftop, five climate zones up",
+
             'hero_stats' => [
                 ['num' => '3', 'suffix' => '', 'label' => 'Ways to explore'],
                 ['num' => '180', 'suffix' => '+', 'label' => 'Trips run'],
@@ -39,12 +46,38 @@ class HomeContent extends Model
             ],
 
             'intro_tag' => 'Who we are',
-            'intro_title' => 'One Arusha team, <em>every step of the way</em>.',
+            'intro_title' => 'Ready to conquer <em>Mount Kilimanjaro?</em>',
+            'intro_image' => 'images/gal-kili-climbers.jpg',
+            'intro_cta_label' => 'Plan Your Adventure Today',
             'intro_paragraphs' => [
-                "Safari is the Swahili word for journey — and in Tanzania that journey happens on a lot more than the back of a Land Cruiser. It's a dawn game drive across the Serengeti plains, a week climbing through five climate zones on Kilimanjaro, or a slow afternoon on a dhow off Zanzibar. We run all three, in-house, from one office in Arusha.",
-                "We're not a booking platform reselling someone else's itinerary. Perfect Kilimanjaro is a small team of Tanzanian guides and planners who build every trip, drive every vehicle, and answer every message ourselves — so the price you're quoted is the trip you actually get.",
-                'On safari, we run the <strong>Northern Circuit</strong> (Tarangire, Serengeti and Ngorongoro), the quieter <strong>Southern Circuit</strong> (Ruaha, Nyerere and Mikumi), and migration-timed trips built around the Mara River crossings. On the mountain, we guide the <strong>Machame</strong>, <strong>Lemosho</strong> and <strong>Marangu</strong> routes. On the coast, we run beach, spice-and-dhow and honeymoon trips across <strong>Zanzibar</strong>.',
-                'Safaris come in Classic, Mid-range and Luxury tiers, Kilimanjaro routes are picked by fitness and time rather than price, and our Zanzibar trips range from relaxed beach time to a more active spice-and-dhow week — so the itinerary fits you, not the other way around.',
+                'Three generations. One family. Over 1,000 successful summits led to the top of Africa\'s highest peak.',
+                'Since the 1970s, the Ngatambaku Mtui family has guided climbers up Kilimanjaro — starting with our grandfather, Dominic Mtui, continued by our father, Peter Mtui, and now led by Priscus, who has personally guided over 350 successful summits. Guiding isn\'t our business. It\'s our heritage.',
+            ],
+
+            'why_tag' => 'Why choose us',
+            'why_title' => 'Why <em>Perfect Kilimanjaro</em>',
+            'why_lede' => "What actually sets a family-run, in-house operator apart from a booking platform reselling someone else's itinerary.",
+            'why_items' => [
+                [
+                    'title' => 'Three Generations of Kilimanjaro Guides',
+                    'text' => "Local guides have been at the heart of Kilimanjaro since Hans Meyer's first ascent in 1889, and our family has guided here since the 1970s. Priscus, our owner and guide, first climbed at 14, worked as a porter for seven years, and has now summited more than 350 times.",
+                    'image' => 'images/team/01M33YK3T3WAP2HQ22R6XW5M2R.webp',
+                ],
+                [
+                    'title' => 'Safety First, Every Day',
+                    'text' => 'Every guide is Wilderness First Responder (WFR) certified. We check your health every morning and evening with the Lake Louise Score and oxygen saturation readings. We carry emergency oxygen on every climb, and helicopter rescue is available with your travel insurance.',
+                    'image' => 'images/gal-kili-summit.jpg',
+                ],
+                [
+                    'title' => '100% Locally Owned',
+                    'text' => 'There is no income outflow. Everything is run in Tanzania, with Tanzanian guides, so your money supports local jobs, families, and communities.',
+                    'image' => 'images/gal-kili-climbers.jpg',
+                ],
+                [
+                    'title' => 'Pioneers of Biking Adventures in Tanzania',
+                    'text' => 'We were the first to introduce Kilimanjaro biking expeditions in the early 2000s, from scenic rides around the mountain to cycling all the way to the summit.',
+                    'image' => 'images/hero-kilimanjaro.jpg',
+                ],
             ],
 
             'pillars_tag' => 'What we run',
@@ -103,7 +136,7 @@ class HomeContent extends Model
 
             'about_tag' => 'About us',
             'about_title' => 'Run by the people <em>on the ground</em>',
-            'about_lede' => "Safiri is a small Arusha-based team, not a booking platform reselling someone else's itinerary.",
+            'about_lede' => "Perfect Kilimanjaro is a small Arusha-based team, not a booking platform reselling someone else's itinerary.",
             'about_story_title' => 'Our story',
             'about_story_text' => 'Started by guides who spent years leading trips for foreign-owned operators and wanted travelers to see more of what they were actually paying for. We plan every itinerary in-house and work only with crews we know personally.',
             'about_team_title' => 'Our team',
@@ -125,6 +158,9 @@ class HomeContent extends Model
 
             'cta_title' => 'Not sure which trip <em>fits you?</em>',
             'cta_text' => "Tell us your dates, budget and what you want to see — we'll match you to the right itinerary and send a day-by-day plan.",
+
+            'tripadvisor_url' => null,
+            'google_reviews_url' => null,
         ];
     }
 }

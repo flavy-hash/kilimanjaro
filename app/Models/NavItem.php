@@ -132,48 +132,18 @@ class NavItem extends Model
             ->all();
     }
 
-    /** @return array<int, array<string, mixed>> */
+    /**
+     * Order matches the site's requested nav structure: Kilimanjaro, Biking,
+     * Safari, Traditional tour, East African Prices, Climbing Preparation, Blog, About Us.
+     * "Southern Circuit" is no longer a top-level item — it's folded into
+     * the Safaris dropdown as a link, since it's a circuit within the safari
+     * category rather than its own category.
+     *
+     * @return array<int, array<string, mixed>>
+     */
     public static function defaultRows(): array
     {
         return [
-            [
-                'label' => 'All Tours',
-                'type' => 'link',
-                'href' => '/tours',
-            ],
-            [
-                'label' => 'Safaris',
-                'type' => 'mega',
-                'image' => 'images/hero-safari.jpg',
-                'title' => 'Tanzania Safaris',
-                'description' => 'Northern Circuit favorites — Serengeti, Ngorongoro and Tarangire, tracked to where the migration actually is this week.',
-                'cta_label' => 'Explore safaris',
-                'cta_action' => 'category',
-                'cta_target' => 'safari',
-                'links' => [
-                    ['text' => 'View all safaris', 'action' => 'category', 'target' => 'safari'],
-                    ['text' => 'Classic', 'action' => 'package', 'target' => 'northern-circuit'],
-                    ['text' => 'Mid-range', 'action' => 'package', 'target' => 'southern-circuit'],
-                    ['text' => 'Luxury', 'action' => 'package', 'target' => 'migration-safari'],
-                ],
-            ],
-            [
-                'label' => 'Southern Circuit',
-                'type' => 'mega',
-                'image' => 'images/menu-southern.jpg',
-                'title' => 'Tanzania Southern Circuit',
-                'description' => 'The uncrowded south — Ruaha, Nyerere (Selous) and Mikumi. Big herds, big cats and boat safaris, well away from the busier northern parks.',
-                'cta_label' => 'Explore the south',
-                'cta_action' => 'package',
-                'cta_target' => 'southern-circuit',
-                'links' => [
-                    ['text' => 'View all southern', 'action' => 'package', 'target' => 'southern-circuit'],
-                    ['text' => 'Ruaha National Park', 'action' => 'package', 'target' => 'southern-circuit'],
-                    ['text' => 'Nyerere · Selous', 'action' => 'package', 'target' => 'southern-circuit'],
-                    ['text' => 'Mikumi National Park', 'action' => 'package', 'target' => 'southern-circuit'],
-                    ['text' => 'Udzungwa Mountains', 'action' => 'package', 'target' => 'southern-circuit'],
-                ],
-            ],
             [
                 'label' => 'Kilimanjaro',
                 'type' => 'mega',
@@ -188,29 +158,74 @@ class NavItem extends Model
                     ['text' => 'Machame · 7 Days', 'action' => 'package', 'target' => 'machame'],
                     ['text' => 'Lemosho · 8 Days', 'action' => 'package', 'target' => 'lemosho'],
                     ['text' => 'Marangu · 6 Days', 'action' => 'package', 'target' => 'marangu'],
+                    ['text' => 'Northern Circuit · 8 Days', 'action' => 'package', 'target' => 'northern'],
+                    ['text' => 'East African Citizens (TZS)', 'action' => 'url', 'target' => '/kilimanjaro-east-african-citizens'],
                 ],
             ],
             [
-                'label' => 'Zanzibar',
+                'label' => 'Biking',
+                'type' => 'mega',
+                'image' => 'images/hero-kilimanjaro.jpg',
+                'title' => 'Cycling Safaris',
+                'description' => "Mountain bike through highland farms, villages and crater rims, with a support vehicle following the whole way.",
+                'cta_label' => 'Explore biking',
+                'cta_action' => 'category',
+                'cta_target' => 'biking',
+                'links' => [
+                    ['text' => 'View all biking trips', 'action' => 'category', 'target' => 'biking'],
+                    ['text' => 'Ngorongoro Highlands · 5 Days', 'action' => 'package', 'target' => 'ngorongoro-highlands-cycling-safari'],
+                    ['text' => 'Kilimanjaro Foothills · 3 Days', 'action' => 'package', 'target' => 'kilimanjaro-foothills-ride'],
+                ],
+            ],
+            [
+                'label' => 'Safari',
+                'type' => 'mega',
+                'image' => 'images/hero-safari.jpg',
+                'title' => 'Tanzania Safaris',
+                'description' => 'Northern Circuit favorites — Serengeti, Ngorongoro and Tarangire — plus the uncrowded southern parks.',
+                'cta_label' => 'Explore safaris',
+                'cta_action' => 'category',
+                'cta_target' => 'safari',
+                'links' => [
+                    ['text' => 'View all safaris', 'action' => 'category', 'target' => 'safari'],
+                    ['text' => 'Classic', 'action' => 'package', 'target' => 'northern-circuit'],
+                    ['text' => 'Southern Circuit', 'action' => 'package', 'target' => 'southern-circuit'],
+                    ['text' => 'Luxury', 'action' => 'package', 'target' => 'migration-safari'],
+                ],
+            ],
+            [
+                'label' => 'Traditional tour',
                 'type' => 'mega',
                 'image' => 'images/hero-zanzibar.jpg',
-                'title' => 'Zanzibar Escapes',
+                'title' => 'Traditional Tours',
                 'description' => 'Stone Town history, spice farm tours, dhow cruises and beach time on the Indian Ocean coast.',
-                'cta_label' => 'Explore Zanzibar',
+                'cta_label' => 'Explore Traditional Tours',
                 'cta_action' => 'category',
                 'cta_target' => 'zanzibar',
                 'links' => [
-                    ['text' => 'Beach Holidays', 'action' => 'package', 'target' => 'zanzibar-beach'],
-                    ['text' => 'Stone Town Tours', 'action' => 'package', 'target' => 'zanzibar-beach'],
-                    ['text' => 'Spice Tours', 'action' => 'package', 'target' => 'zanzibar-dhow'],
-                    ['text' => 'Boat Trips & Snorkeling', 'action' => 'package', 'target' => 'zanzibar-dhow'],
+                    ['text' => 'View all traditional tours', 'action' => 'category', 'target' => 'zanzibar'],
                 ],
             ],
             [
-                'label' => 'About',
+                'label' => 'East African Prices',
+                'type' => 'link',
+                'href' => '/kilimanjaro-east-african-citizens',
+            ],
+            [
+                'label' => 'Climbing Preparation',
+                'type' => 'link',
+                'href' => '/climbing-preparation',
+            ],
+            [
+                'label' => 'Blog',
+                'type' => 'link',
+                'href' => '/blog',
+            ],
+            [
+                'label' => 'About Us',
                 'type' => 'mega',
                 'image' => 'images/menu-about.jpg',
-                'title' => 'About Safiri',
+                'title' => 'About Perfect Kilimanjaro',
                 'description' => "A small Arusha-based team running every trip in-house — not a booking platform reselling someone else's itinerary.",
                 'cta_label' => 'Read our story',
                 'cta_action' => 'url',

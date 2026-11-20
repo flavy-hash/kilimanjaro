@@ -46,13 +46,13 @@ const KILI_ROUTE_DEFS = [
     text:"Nicknamed the “Whiskey Route,” Machame is the second most popular trail on Kilimanjaro. It climbs steeply through rainforest on the southern slope before crossing the Shira Plateau toward Lava Tower, then drops into the Barranco Valley for a scenic acclimatization loop before the summit push."
   },
   {
-    id:"lemosho", name:"Lemosho Route", days:"7–8 days", difficulty:"Moderate",
+    id:"lemosho", name:"Lemosho Route", days:"6–9 days", difficulty:"Moderate",
     ascent:["londorossi","shiraPlat","shira1","shira2","lavaTower","barranco","karanga","barafu","peak"],
     descent:["peak","millenium","mwekaGate"],
     text:"Starting on Kilimanjaro's remote western side, Lemosho has one of the longest and most gradual approaches, crossing the wide Shira Plateau below the jagged Cathedral Peak. Its extra acclimatization days give it one of the best summit-success rates of any route."
   },
   {
-    id:"marangu", name:"Marangu Route", days:"5–6 days", difficulty:"Easiest",
+    id:"marangu", name:"Marangu Route", days:"5–7 days", difficulty:"Easiest",
     ascent:["maranguGate","mandara","horombo","kibo","peak"],
     descent:["peak","kibo","horombo","mandara","maranguGate"],
     text:"Marangu is the only route with sleeping huts instead of tents, and the only one where climbers descend the same path they climbed. Its gentle, direct profile makes it popular with first-timers, though the fast ascent gives less time to acclimatize."
@@ -97,7 +97,7 @@ function kiliSmoothPath(points){
 function kiliMarkerSvg(w, dim){
   const labelCls = dim ? "marker-label marker-label-dim" : "marker-label";
   const elevCls = dim ? "marker-elev marker-elev-dim" : "marker-elev";
-  const fill = dim ? "#b9b7a4" : (w.type === "gate-down" ? "#3f6b4a" : "#20261f");
+  const fill = dim ? "#b8bdc9" : (w.type === "gate-down" ? "#1d4ed8" : "#0a0a0a");
   const above = w.y > 380;
   const ly = above ? -14 : 20;
   const anchor = w.x > 620 ? "end" : (w.x < 140 ? "start" : "middle");
@@ -131,9 +131,9 @@ function kiliPeakSvg(){
   const w = KILI_W.peak;
   return `
   <g transform="translate(${w.x},${w.y})">
-    <path d="M0 -14 L0 10" stroke="#20261f" stroke-width="2"/>
-    <path d="M0 -14 L14 -8 L0 -2 Z" fill="#bd5433"/>
-    <circle cy="11" r="2" fill="#20261f"/>
+    <path d="M0 -14 L0 10" stroke="#0a0a0a" stroke-width="2"/>
+    <path d="M0 -14 L14 -8 L0 -2 Z" fill="#1d4ed8"/>
+    <circle cy="11" r="2" fill="#0a0a0a"/>
     <text class="peak-label" x="18" y="-1">${w.label}</text>
     <text class="marker-elev" x="18" y="12">${w.elev}</text>
   </g>`;
@@ -145,7 +145,7 @@ function kiliContours(){
     {rx:385, ry:265, op:0.09}, {rx:315, ry:220, op:0.11}, {rx:250, ry:178, op:0.14},
     {rx:190, ry:138, op:0.18}, {rx:135, ry:100, op:0.22}, {rx:85,  ry:64,  op:0.28},
   ];
-  return rings.map(r => `<ellipse cx="500" cy="300" rx="${r.rx}" ry="${r.ry}" fill="none" stroke="#20261f" stroke-opacity="${r.op}" stroke-width="1.4"/>`).join("");
+  return rings.map(r => `<ellipse cx="500" cy="300" rx="${r.rx}" ry="${r.ry}" fill="none" stroke="#0a0a0a" stroke-opacity="${r.op}" stroke-width="1.4"/>`).join("");
 }
 
 function kiliDifficultyColor(d){
@@ -165,14 +165,14 @@ function kiliBuildMapSvg(route){
   const descentD = kiliSmoothPath(descentPts);
 
   return `
-    <rect x="0" y="0" width="800" height="660" fill="#f3f0e6"/>
+    <rect x="0" y="0" width="800" height="660" fill="#f8f9fc"/>
     ${kiliContours()}
-    <text x="500" y="622" text-anchor="middle" font-family="Syne, sans-serif" font-size="13" fill="#c9c3ac" letter-spacing="2">KILIMANJARO NATIONAL PARK</text>
+    <text x="500" y="622" text-anchor="middle" font-family="Syne, sans-serif" font-size="13" fill="#c5cad6" letter-spacing="2">KILIMANJARO NATIONAL PARK</text>
 
     ${allMarkers}
 
-    <path d="${ascentD}" fill="none" stroke="#20261f" stroke-width="2.4" stroke-dasharray="1 7" stroke-linecap="round" class="kili-route-path"/>
-    ${route.descent.length > 1 ? `<path d="${descentD}" fill="none" stroke="#3f6b4a" stroke-width="2.4" stroke-dasharray="1 7" stroke-linecap="round" class="kili-route-path"/>` : ""}
+    <path d="${ascentD}" fill="none" stroke="#0a0a0a" stroke-width="2.4" stroke-dasharray="1 7" stroke-linecap="round" class="kili-route-path"/>
+    ${route.descent.length > 1 ? `<path d="${descentD}" fill="none" stroke="#1d4ed8" stroke-width="2.4" stroke-dasharray="1 7" stroke-linecap="round" class="kili-route-path"/>` : ""}
 
     ${route.ascent.filter(id => KILI_W[id].type.startsWith('gate')).map(id => kiliMarkerSvg(KILI_W[id], false)).join('')}
     ${route.descent.filter(id => KILI_W[id].type.startsWith('gate')).map(id => kiliMarkerSvg(KILI_W[id], false)).join('')}

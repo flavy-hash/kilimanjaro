@@ -2,10 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\NewInquiryReceived;
 use App\Models\Inquiry;
 use App\Models\Package;
+use App\Rules\Turnstile;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 
 class InquiryController extends Controller
 {
@@ -19,6 +23,7 @@ class InquiryController extends Controller
             'start_date' => ['nullable', 'date'],
             'group_size' => ['nullable', 'integer', 'min:1', 'max:60'],
             'message' => ['nullable', 'string', 'max:2000'],
+            Turnstile::FIELD => [new Turnstile($request->ip())],
         ]);
 
         $package = isset($data['trip'])
@@ -36,6 +41,17 @@ class InquiryController extends Controller
             'message' => $data['message'] ?? null,
             'status' => 'new',
         ]);
+
+        try {
+            Mail::to(config('mail.inquiry_notify'))->send(new NewInquiryReceived($inquiry));
+        } catch (\Throwable $e) {
+            // The inquiry is already saved — a mail outage should never block
+            // the customer's confirmation, just get logged for follow-up.
+            Log::error('Failed to send inquiry notification email', [
+                'inquiry_id' => $inquiry->id,
+                'error' => $e->getMessage(),
+            ]);
+        }
 
         return response()->json(['reference' => $inquiry->reference]);
     }
