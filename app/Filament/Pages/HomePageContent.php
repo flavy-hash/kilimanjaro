@@ -151,6 +151,15 @@ class HomePageContent extends Page
                                         Repeater::make('why_items')
                                             ->hiddenLabel()
                                             ->schema([
+                                                FileUpload::make('image')
+                                                    ->label('Picture')
+                                                    ->image()
+                                                    ->disk('site')
+                                                    ->directory('images/why')
+                                                    ->visibility('public')
+                                                    ->imageEditor()
+                                                    ->helperText('Small photo shown on this card. Leave blank to show the default icon instead.')
+                                                    ->columnSpanFull(),
                                                 TextInput::make('title')->required()->maxLength(60),
                                                 Textarea::make('text')->rows(2)->required()->maxLength(300),
                                             ])
@@ -288,6 +297,25 @@ class HomePageContent extends Page
                                             ->reorderable()
                                             ->itemLabel(fn (array $state): ?string => $state['question'] ?? null)
                                             ->collapsible(),
+                                    ]),
+                            ]),
+
+                        Tab::make('Reviews')
+                            ->schema([
+                                Section::make('Review platform links')
+                                    ->description('Shown as "Read our reviews on..." links below the featured reviews.')
+                                    ->schema([
+                                        TextInput::make('tripadvisor_url')
+                                            ->label('Tripadvisor URL')
+                                            ->url()
+                                            ->maxLength(255)
+                                            ->placeholder('https://www.tripadvisor.com/...'),
+
+                                        TextInput::make('google_reviews_url')
+                                            ->label('Google Reviews URL')
+                                            ->url()
+                                            ->maxLength(255)
+                                            ->placeholder('https://g.page/r/.../review'),
                                     ]),
                             ]),
 
