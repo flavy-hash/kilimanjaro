@@ -3,12 +3,15 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Package extends Model
 {
+    use HasFactory;
+
     protected $guarded = [];
 
     protected $casts = [
@@ -17,6 +20,13 @@ class Package extends Model
         'excluded' => 'array',
         'gallery' => 'array',
         'itinerary' => 'array',
+        'price_tiers' => 'array',
+        'recommended_for' => 'array',
+        'route_comparison_tiers' => 'array',
+        'choose_this_if' => 'array',
+        'choose_other_if' => 'array',
+        'tipping_table' => 'array',
+        'optional_extras' => 'array',
         'is_published' => 'boolean',
         'rating' => 'float',
     ];
@@ -85,6 +95,7 @@ class Package extends Model
             'location' => $this->location,
             'days' => $this->days,
             'price' => $this->price,
+            'price_tiers' => $this->price_tiers ?? [],
             'tag' => $this->tag,
             'rate' => $this->rate,
             'rating' => $this->rating,
@@ -96,10 +107,20 @@ class Package extends Model
             'image' => $this->image,
             'accommodation' => $this->accommodation ?: $this->stays->first()?->class,
             'blurb' => $this->blurb,
+            'quote' => $this->quote,
             'overview' => $this->overview,
             'highlights' => $this->highlights ?? [],
+            'recommended_for' => $this->recommended_for ?? [],
+            'route_comparison_intro' => $this->route_comparison_intro,
+            'route_comparison_tiers' => $this->route_comparison_tiers ?? [],
+            'choose_this_if' => $this->choose_this_if ?? [],
+            'choose_other_if' => $this->choose_other_if ?? [],
+            'choose_other_label' => $this->choose_other_label,
             'included' => $this->included ?? [],
             'excluded' => $this->excluded ?? [],
+            'tipping_table' => $this->tipping_table ?? [],
+            'optional_extras' => $this->optional_extras ?? [],
+            'closing_note' => $this->closing_note,
             'gallery' => $this->gallery ?? [],
             'itinerary' => $this->itinerary ?? [],
             'video_youtube_id' => $this->video_youtube_id,

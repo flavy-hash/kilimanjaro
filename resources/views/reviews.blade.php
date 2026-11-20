@@ -41,7 +41,7 @@
   </div>
 </div>
 
-<section>
+<section id="reviews">
   <div class="wrap">
 
     @if (session('review_submitted'))
@@ -50,24 +50,31 @@
       </div>
     @endif
 
-    <div class="review-list">
+    <div class="reviews-grid reviews-grid-page">
       @forelse ($reviews as $review)
-        <div class="review-card">
-          <div class="review-card-head">
-            <div class="review-card-who">
-              <div class="review-avatar">{{ $review['initials'] }}</div>
-              <div><strong>{{ $review['name'] }}</strong></div>
+        <div class="review">
+          @if (filled($review['photos']))
+            <div class="review-photos">
+              @foreach ($review['photos'] as $photo)
+                <img src="{{ asset($photo) }}" alt="Photo from {{ $review['name'] }}'s trip" loading="lazy">
+              @endforeach
             </div>
-            <div class="review-card-meta">
-              <div class="stars">{{ str_repeat('★', $review['rating']) }}{{ str_repeat('☆', 5 - $review['rating']) }}</div>
-              @if ($review['stayed_at'])
-                <div class="date">{{ $review['stayed_at'] }}</div>
-              @endif
+          @endif
+
+          <div class="review-who">
+            <div class="review-avatar">{{ $review['initials'] }}</div>
+            <div>
+              <div class="review-stars">{{ str_repeat('★', $review['rating']) }}{{ str_repeat('☆', 5 - $review['rating']) }}</div>
+              <div class="review-meta">
+                <strong>{{ $review['name'] }}</strong>
+                @if (filled($review['country'])) / {{ $review['country'] }} @endif
+                @if ($review['stayed_at']) &middot; {{ $review['stayed_at'] }} @endif
+              </div>
             </div>
           </div>
 
           <h3>{{ $review['title'] }}</h3>
-          <p>{{ $review['body'] }}</p>
+          <p class="review-body">{{ $review['body'] }}</p>
 
           @if ($review['service_rating'] || $review['value_rating'])
             <div class="review-card-sub">
@@ -80,13 +87,12 @@
             </div>
           @endif
 
-          @if ($review['photo'])
-            <img class="review-card-photo" src="{{ asset($review['photo']) }}" alt="Photo from {{ $review['name'] }}'s trip" loading="lazy">
-          @endif
-
-          @if ($review['trip'])
-            <a class="review-card-trip" href="{{ $review['trip_url'] }}">{{ $review['trip'] }}</a>
-          @endif
+          <div class="review-foot">
+            <a href="#" class="review-read" onclick="toggleReview(this);return false;">Read Review</a>
+            @if ($review['trip'])
+              <a class="review-tag" href="{{ $review['trip_url'] }}">{{ $review['trip'] }}</a>
+            @endif
+          </div>
         </div>
       @empty
         <p class="section-lede">No reviews yet — <a href="#" onclick="openReviewForm();return false;" style="color:var(--glow-soft)">be the first to leave one</a>.</p>
@@ -206,6 +212,24 @@ document.querySelectorAll('.star-picker').forEach(picker => {
       paint(Number(btn.dataset.value));
     });
   });
+});
+
+// Cards show a few lines of each review; "Read Review" opens the rest in place.
+function toggleReview(link){
+  const card = link.closest('.review');
+  const open = card.classList.toggle('expanded');
+  link.textContent = open ? 'Show less' : 'Read Review';
+}
+// A review that already fits needs no "Read Review". Hiding (not removing) it
+// keeps the trip tag pinned right; with no trip tag either, drop the footer.
+document.querySelectorAll('.review-body').forEach(body => {
+  if (body.scrollHeight > body.clientHeight + 1) return;
+  const card = body.closest('.review');
+  if (card.querySelector('.review-tag')) {
+    card.querySelector('.review-read').classList.add('is-hidden');
+  } else {
+    card.querySelector('.review-foot').remove();
+  }
 });
 
 function openReviewForm(){

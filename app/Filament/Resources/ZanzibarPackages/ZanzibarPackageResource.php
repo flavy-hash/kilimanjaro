@@ -13,9 +13,9 @@ class ZanzibarPackageResource extends BasePackageResource
 {
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedSun;
 
-    protected static ?string $navigationLabel = 'Zanzibar';
+    protected static ?string $navigationLabel = 'Traditional Tour';
 
-    protected static ?string $modelLabel = 'Zanzibar package';
+    protected static ?string $modelLabel = 'Traditional tour package';
 
     protected static string|\UnitEnum|null $navigationGroup = 'Packages';
 

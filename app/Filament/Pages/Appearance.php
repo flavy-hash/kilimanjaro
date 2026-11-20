@@ -54,8 +54,8 @@ class Appearance extends Page
                             ->hiddenLabel()
                             ->options(Setting::THEMES)
                             ->descriptions([
-                                'dark' => 'The original look — dark background, warm accents.',
-                                'light' => 'Light background with the same warm accents.',
+                                'dark' => 'Black background with royal-blue accents.',
+                                'light' => 'White background, royal-blue buttons and highlights, black footer and menus.',
                                 'system' => 'Each visitor gets light or dark to match their own phone or computer setting.',
                             ])
                             ->required()

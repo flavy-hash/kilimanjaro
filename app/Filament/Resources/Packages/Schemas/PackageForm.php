@@ -151,12 +151,74 @@ class PackageForm
                             ->default(0),
                     ]),
 
+                Section::make('Group pricing')
+                    ->description('Optional breakdown by group size. When filled in, the package page shows a "price per person by group size" table in the booking card and a full pricing table in the article body.')
+                    ->schema([
+                        Repeater::make('price_tiers')
+                            ->hiddenLabel()
+                            ->addActionLabel('Add group size')
+                            ->reorderable()
+                            ->default([])
+                            ->schema([
+                                TextInput::make('label')
+                                    ->label('Group size')
+                                    ->required()
+                                    ->maxLength(40)
+                                    ->placeholder('1 person'),
+
+                                TextInput::make('park_fees')
+                                    ->label('Park fees (USD)')
+                                    ->numeric()
+                                    ->minValue(0)
+                                    ->prefix('$')
+                                    ->helperText('Optional — leave blank to hide the breakdown and show only the total.'),
+
+                                TextInput::make('other_costs')
+                                    ->label('Other costs (USD)')
+                                    ->numeric()
+                                    ->minValue(0)
+                                    ->prefix('$'),
+
+                                TextInput::make('price')
+                                    ->label('Total per person (USD)')
+                                    ->required()
+                                    ->numeric()
+                                    ->minValue(0)
+                                    ->prefix('$'),
+                            ])
+                            ->columns(4),
+                    ]),
+
                 Section::make('Overview')
                     ->schema([
+                        Textarea::make('quote')
+                            ->label('Opening quote')
+                            ->rows(4)
+                            ->maxLength(1000)
+                            ->placeholder($isClimb ? '"The 6-day Lemosho is our shortest version of this route — and I want to be upfront with you about what that means..."' : null)
+                            ->helperText('Optional pull-quote shown in a callout box near the top of the page — e.g. a word from Priscus.'),
+
                         Textarea::make('overview')
                             ->label('Full description')
                             ->rows(6)
-                            ->helperText('The long paragraph under the "Overview" heading.'),
+                            ->helperText('The long paragraph under the "Overview" heading.')
+                            ->columnSpanFull(),
+                    ]),
+
+                Section::make('Recommended for')
+                    ->description('Short list of traveller profiles this specific itinerary suits — shown right under the opening quote.')
+                    ->schema([
+                        Repeater::make('recommended_for')
+                            ->hiddenLabel()
+                            ->simple(
+                                TextInput::make('value')
+                                    ->required()
+                                    ->maxLength(160)
+                                    ->placeholder('Experienced trekkers')
+                            )
+                            ->addActionLabel('Add profile')
+                            ->reorderable()
+                            ->default([]),
                     ]),
 
                 Section::make('Highlights')
@@ -175,8 +237,70 @@ class PackageForm
                             ->default([]),
                     ]),
 
+                Section::make('Duration comparison')
+                    ->description('Only needed when this route is offered in several durations (e.g. Lemosho 6 / 8 / 9 days) — explains how this one differs and who should pick it instead of another.')
+                    ->collapsible()
+                    ->collapsed()
+                    ->schema([
+                        Textarea::make('route_comparison_intro')
+                            ->label('Intro paragraph')
+                            ->rows(3)
+                            ->placeholder('The Lemosho Route is available as a 6, 7, or 8-day itinerary...')
+                            ->columnSpanFull(),
+
+                        Repeater::make('route_comparison_tiers')
+                            ->label('Version-by-version breakdown')
+                            ->addActionLabel('Add version')
+                            ->reorderable()
+                            ->default([])
+                            ->schema([
+                                Select::make('medal')
+                                    ->label('Badge')
+                                    ->options(['gold' => 'Gold', 'silver' => 'Silver', 'bronze' => 'Bronze'])
+                                    ->native(false)
+                                    ->helperText('Shown as a small award icon.'),
+                                TextInput::make('title')
+                                    ->label('Version title')
+                                    ->required()
+                                    ->maxLength(120)
+                                    ->placeholder('The 6-day version'),
+                                TextInput::make('rate')
+                                    ->label('Summit success rate')
+                                    ->maxLength(60)
+                                    ->placeholder('~60%'),
+                                Textarea::make('description')
+                                    ->label('Description')
+                                    ->required()
+                                    ->rows(2)
+                                    ->columnSpanFull(),
+                            ])
+                            ->columns(3)
+                            ->columnSpanFull(),
+
+                        Repeater::make('choose_this_if')
+                            ->label('Choose this version if…')
+                            ->simple(TextInput::make('value')->required()->maxLength(160))
+                            ->addActionLabel('Add reason')
+                            ->reorderable()
+                            ->default([]),
+
+                        Repeater::make('choose_other_if')
+                            ->label('Choose a different version if…')
+                            ->simple(TextInput::make('value')->required()->maxLength(160))
+                            ->addActionLabel('Add reason')
+                            ->reorderable()
+                            ->default([]),
+
+                        TextInput::make('choose_other_label')
+                            ->label('Other version(s) label')
+                            ->maxLength(60)
+                            ->placeholder('the 7 or 8-day')
+                            ->helperText('Used in the "Choose ___ instead" heading.')
+                            ->columnSpanFull(),
+                    ]),
+
                 Section::make('Itinerary')
-                    ->description('One entry per day, in order. Opens as an accordion on the site.')
+                    ->description('One entry per day, in order. Every day is expanded by default on the site.')
                     ->schema([
                         Repeater::make('itinerary')
                             ->hiddenLabel()
@@ -205,6 +329,26 @@ class PackageForm
                                     ->placeholder('1,640 → 2,835 m')
                                     ->helperText('Optional — leave blank for non-climbing days.'),
 
+                                TextInput::make('distance')
+                                    ->label('Distance')
+                                    ->maxLength(40)
+                                    ->placeholder('18 km'),
+
+                                TextInput::make('time')
+                                    ->label('Hiking time')
+                                    ->maxLength(40)
+                                    ->placeholder('8–10 hours'),
+
+                                TextInput::make('vegetation')
+                                    ->label('Vegetation / zone')
+                                    ->maxLength(80)
+                                    ->placeholder('Rainforest, Moorland & Shira Plateau'),
+
+                                TextInput::make('difficulty')
+                                    ->label('Day difficulty')
+                                    ->maxLength(80)
+                                    ->placeholder('Hard — the longest, most demanding day of the route'),
+
                                 TextInput::make('stay')
                                     ->label('Stay')
                                     ->maxLength(120)
@@ -214,6 +358,13 @@ class PackageForm
                                     ->label('Meals')
                                     ->maxLength(40)
                                     ->placeholder('B, L, D'),
+
+                                Textarea::make('note')
+                                    ->label('Callout note (optional)')
+                                    ->rows(2)
+                                    ->placeholder('Perfect Kilimanjaro note: Rest this evening...')
+                                    ->helperText('Shown as a highlighted box under the day. Leave blank to omit.')
+                                    ->columnSpanFull(),
                             ])
                             ->columns(3),
                     ]),
@@ -288,6 +439,55 @@ class PackageForm
                             ->addActionLabel('Add item')
                             ->reorderable()
                             ->default([]),
+                    ]),
+
+                Section::make('Tipping guide')
+                    ->description('Optional table shown after Included/Not included.')
+                    ->schema([
+                        Repeater::make('tipping_table')
+                            ->hiddenLabel()
+                            ->addActionLabel('Add crew member')
+                            ->reorderable()
+                            ->default([])
+                            ->schema([
+                                TextInput::make('role')
+                                    ->label('Crew member')
+                                    ->required()
+                                    ->maxLength(60)
+                                    ->placeholder('Porters'),
+
+                                TextInput::make('tip')
+                                    ->label('Recommended tip per day')
+                                    ->required()
+                                    ->maxLength(40)
+                                    ->placeholder('$6 – $10'),
+                            ])
+                            ->columns(2),
+                    ]),
+
+                Section::make('Optional extras')
+                    ->description('Add-ons clients can book on top of this package.')
+                    ->schema([
+                        Repeater::make('optional_extras')
+                            ->hiddenLabel()
+                            ->simple(
+                                TextInput::make('value')
+                                    ->required()
+                                    ->maxLength(200)
+                                    ->placeholder('Private Portable Toilet — $100 per group')
+                            )
+                            ->addActionLabel('Add extra')
+                            ->reorderable()
+                            ->default([]),
+                    ]),
+
+                Section::make('Closing note')
+                    ->description('A personal closing letter shown at the end of the page, signed by Priscus.')
+                    ->schema([
+                        Textarea::make('closing_note')
+                            ->hiddenLabel()
+                            ->rows(8)
+                            ->placeholder('I will be honest with you — as I always am...'),
                     ]),
 
                 Section::make('Publishing')

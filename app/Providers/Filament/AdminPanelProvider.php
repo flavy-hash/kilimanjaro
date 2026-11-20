@@ -28,6 +28,7 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login()
+            ->databaseNotifications()
             ->colors([
                 'primary' => Color::Amber,
             ])
@@ -41,6 +42,7 @@ class AdminPanelProvider extends PanelProvider
                 AccountWidget::class,
             ])
             ->brandName('Perfect Kilimanjaro')
+            ->favicon(asset('favicon-32x32.png?v=2'))
             ->navigationGroups([
                 'Packages',
                 'Content',

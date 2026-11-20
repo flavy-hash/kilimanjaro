@@ -3,19 +3,17 @@
 @section('content')
 
 <header class="hero" id="top">
-  <div class="hero-slides" id="heroSlides"></div>
+  @if (filled($home->hero_video))
+    <video class="hero-video" autoplay muted loop playsinline poster="{{ asset($home->hero_poster) }}">
+      <source src="{{ asset($home->hero_video) }}" type="video/mp4">
+    </video>
+  @else
+    <img class="hero-video" src="{{ asset($home->hero_poster) }}" alt="{{ $home->hero_headline }}">
+  @endif
   <div class="hero-overlay"></div>
-
-  <button class="hero-arrow prev" onclick="heroPrev()" aria-label="Previous destination">
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
-  </button>
-  <button class="hero-arrow next" onclick="heroNext()" aria-label="Next destination">
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
-  </button>
 
   <div class="hero-inner">
     <div id="heroContent"></div>
-    <div class="hero-dots" id="heroDots"></div>
   </div>
 
   <div class="hero-stats">
@@ -26,16 +24,41 @@
 </header>
 
 <section id="intro">
-  <div class="wrap intro-wrap reveal">
-    <div class="tag">{{ $home->intro_tag }}</div>
-    <h2 class="section-title">{!! $home->intro_title !!}</h2>
-    <div class="intro-copy">
-      @foreach ($home->intro_paragraphs as $paragraph)
-        <p>{!! $paragraph !!}</p>
-      @endforeach
+  <div class="wrap">
+    <div class="intro-split">
+      <div class="intro-split-text">
+        <div class="tag">{{ $home->intro_tag }}</div>
+        <h2 class="section-title">{!! $home->intro_title !!}</h2>
+        <div class="intro-copy">
+          @foreach ($home->intro_paragraphs as $paragraph)
+            <p>{!! $paragraph !!}</p>
+          @endforeach
+        </div>
+        @if (filled($home->intro_cta_label))
+          <a class="btn btn-fill" href="{{ route('tours') }}">
+            {{ $home->intro_cta_label }}
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </a>
+        @endif
+      </div>
+      <div class="intro-split-media">
+        <img src="{{ asset($home->intro_image) }}" alt="{{ $home->intro_tag }}" loading="lazy">
+      </div>
     </div>
   </div>
 </section>
+
+@if (filled($home->why_items))
+<section id="why-us">
+  <div class="wrap">
+    <div class="tag">{{ $home->why_tag }}</div>
+    <h2 class="section-title">{!! $home->why_title !!}</h2>
+    <p class="section-lede">{{ $home->why_lede }}</p>
+
+    @include('partials.why-grid', ['items' => $home->why_items])
+  </div>
+</section>
+@endif
 
 <section id="pillars">
   <div class="wrap">
@@ -60,8 +83,8 @@
         <div>
           <div class="route-map-card">
             <div class="route-map-legend">
-              <span><svg viewBox="0 0 20 8"><line x1="0" y1="4" x2="20" y2="4" stroke="#20261f" stroke-width="2" stroke-dasharray="3 3"/></svg>Ascent</span>
-              <span><svg viewBox="0 0 20 8"><line x1="0" y1="4" x2="20" y2="4" stroke="#3f6b4a" stroke-width="2" stroke-dasharray="3 3"/></svg>Descent</span>
+              <span><svg viewBox="0 0 20 8"><line x1="0" y1="4" x2="20" y2="4" stroke="#0a0a0a" stroke-width="2" stroke-dasharray="3 3"/></svg>Ascent</span>
+              <span><svg viewBox="0 0 20 8"><line x1="0" y1="4" x2="20" y2="4" stroke="#1d4ed8" stroke-width="2" stroke-dasharray="3 3"/></svg>Descent</span>
             </div>
             <svg id="kiliMap" viewBox="60 150 680 510" xmlns="http://www.w3.org/2000/svg"></svg>
           </div>
@@ -112,6 +135,12 @@
       <div class="tabs" id="tabs"></div>
     </div>
     <div class="trips-grid" id="tripsGrid"></div>
+    <div style="text-align:center;margin-top:40px">
+      <a class="btn btn-fill" href="{{ route('tours') }}">
+        Explore more
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </a>
+    </div>
   </div>
 </section>
 
@@ -127,22 +156,73 @@
     <h2 class="section-title">What <em>travelers</em> say</h2>
     <div class="reviews-grid">
       @forelse ($featuredReviews as $review)
+        @php($photos = $review->photoList())
         <div class="review">
-          <div class="review-stars">{{ str_repeat('★', $review->rating) }}{{ str_repeat('☆', 5 - $review->rating) }}</div>
-          <p>&quot;{{ $review->body }}&quot;</p>
+          @if (filled($photos))
+            <div class="review-photos">
+              @foreach ($photos as $photo)
+                <img src="{{ asset($photo) }}" alt="Photo from {{ $review->name }}'s trip" loading="lazy">
+              @endforeach
+            </div>
+          @endif
+
           <div class="review-who">
             <div class="review-avatar">{{ $review->initials() }}</div>
-            <div><strong>{{ $review->name }}</strong><span>{{ $review->package->name ?? 'Perfect Kilimanjaro' }}</span></div>
+            <div>
+              <div class="review-stars">{{ str_repeat('★', $review->rating) }}{{ str_repeat('☆', 5 - $review->rating) }}</div>
+              <div class="review-meta">
+                <strong>{{ $review->name }}</strong>
+                @if (filled($review->country)) / {{ $review->country }} @endif
+                @if ($review->stayed_at) &middot; {{ $review->stayed_at->format('M Y') }} @endif
+              </div>
+            </div>
+          </div>
+
+          <h3>{{ $review->title }}</h3>
+          <p>{{ Str::limit($review->body, 140) }}</p>
+
+          <div class="review-foot">
+            <a href="{{ route('reviews.index') }}">Read Review</a>
+            @if ($review->package)
+              <a class="review-tag" href="{{ url($review->package->slug) }}">{{ $review->package->name }}</a>
+            @endif
           </div>
         </div>
       @empty
         <p class="section-lede">Be the first to leave a review.</p>
       @endforelse
     </div>
+
     <a class="section-more-link" href="{{ route('reviews.index') }}">
-      Read all reviews
+      Read More Reviews
       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
     </a>
+
+    <div class="review-platforms">
+      <a class="review-platform" href="{{ $home->tripadvisor_url ?: '#' }}" target="_blank" rel="noopener">
+        <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="#34e0a1" stroke-width="1.5">
+          <circle cx="12" cy="13.2" r="8.3"/><circle cx="8.3" cy="13.2" r="2.5"/><circle cx="15.7" cy="13.2" r="2.5"/>
+          <circle cx="8.3" cy="13.2" r=".6" fill="#34e0a1"/><circle cx="15.7" cy="13.2" r=".6" fill="#34e0a1"/>
+          <path d="M3.3 8.6h4.4M16.3 8.6h4.4M8.7 5c1.1-.7 2.2-1 3.3-1s2.2.3 3.3 1" stroke-linecap="round"/>
+        </svg>
+        <span class="review-platform-word" style="color:#34e0a1">tripadvisor</span>
+        <span class="review-platform-caption">
+          Read our reviews on Tripadvisor
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M7 7h10v10"/></svg>
+        </span>
+      </a>
+      <a class="review-platform" href="{{ $home->google_reviews_url ?: '#' }}" target="_blank" rel="noopener">
+        <svg width="40" height="40" viewBox="0 0 24 24"><path fill="#4285F4" d="M23.52 12.27c0-.85-.07-1.47-.22-2.12H12v3.85h6.6c-.13 1.08-.86 2.72-2.47 3.82l-.02.15 3.59 2.72.25.02c2.28-2.07 3.57-5.12 3.57-8.44"/><path fill="#34A853" d="M12 24c3.24 0 5.95-1.05 7.94-2.87l-3.78-2.87c-1.02.69-2.4 1.17-4.16 1.17-3.18 0-5.88-2.07-6.84-4.92l-.14.01-3.73 2.84-.05.13C3.23 21.3 7.3 24 12 24"/><path fill="#FBBC05" d="M5.16 14.5a7.6 7.6 0 0 1-.42-2.5c0-.87.16-1.72.41-2.5l-.01-.17L1.36 6.44l-.12.06A11.9 11.9 0 0 0 0 12c0 1.93.48 3.76 1.24 5.5z"/><path fill="#EB4335" d="M12 4.75c2.26 0 3.78.94 4.65 1.73l3.4-3.25C17.94 1.2 15.24 0 12 0 7.3 0 3.23 2.7 1.24 6.5l3.91 3c.97-2.85 3.67-4.75 6.85-4.75"/></svg>
+        <span class="review-platform-word">
+          <span style="color:#4285F4">G</span><span style="color:#EA4335">o</span><span style="color:#FBBC05">o</span><span style="color:#4285F4">g</span><span style="color:#34A853">l</span><span style="color:#EA4335">e</span>
+          <span style="color:var(--dim)">Reviews</span>
+        </span>
+        <span class="review-platform-caption">
+          Read our reviews on Google
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M7 7h10v10"/></svg>
+        </span>
+      </a>
+    </div>
   </div>
 </section>
 
@@ -181,7 +261,7 @@
       <div class="video-scrim"></div>
       <div class="video-channel">
         <div class="brand-mark">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="#1a0a00"><path d="m8 3 4 8 5-5 5 15H2L8 3z"/></svg>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="#ffffff"><path d="m8 3 4 8 5-5 5 15H2L8 3z"/></svg>
         </div>
         <div class="video-channel-text">
           <strong class="notranslate">Perfect Kilimanjaro</strong>
@@ -206,26 +286,37 @@
     <h2 class="section-title">{!! $home->about_title !!}</h2>
     <p class="section-lede">{{ $home->about_lede }}</p>
 
-    <div class="about-grid">
-      <div class="about-block">
-        <h3>{{ $home->about_story_title }}</h3>
-        <p>{{ $home->about_story_text }}</p>
-      </div>
-      <div class="about-block">
-        <h3>{{ $home->about_team_title }}</h3>
-        <p>{{ $home->about_team_text }}</p>
-      </div>
-    </div>
-
-    <div id="faq" class="faq-list">
-      @foreach ($home->faqs as $faq)
-        <div class="faq-item">
-          <button class="faq-q" onclick="toggleFaq(this)">{{ $faq['question'] }}
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
-          </button>
-          <div class="faq-a"><p>{{ $faq['answer'] }}</p></div>
+    <div class="home-about">
+      <div class="home-about-cards">
+        <div class="home-about-card is-story">
+          <div class="home-about-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 4h6a4 4 0 0 1 4 4v13a3 3 0 0 0-3-3H2z"/><path d="M22 4h-6a4 4 0 0 0-4 4v13a3 3 0 0 1 3-3h7z"/></svg>
+          </div>
+          <h3>{{ $home->about_story_title }}</h3>
+          <p>{{ $home->about_story_text }}</p>
         </div>
-      @endforeach
+        <div class="home-about-card is-team">
+          <div class="home-about-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          </div>
+          <h3>{{ $home->about_team_title }}</h3>
+          <p>{{ $home->about_team_text }}</p>
+        </div>
+      </div>
+
+      <div class="home-about-faq">
+        <h3 class="home-about-faq-title">Common questions</h3>
+        <div id="faq" class="faq-list">
+          @foreach ($home->faqs as $faq)
+            <div class="faq-item">
+              <button class="faq-q" onclick="toggleFaq(this)">{{ $faq['question'] }}
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+              </button>
+              <div class="faq-a"><p>{{ $faq['answer'] }}</p></div>
+            </div>
+          @endforeach
+        </div>
+      </div>
     </div>
   </div>
 </section>
@@ -261,12 +352,14 @@
 @include('partials.kili-map-data')
 <script>
 const PILLARS = [
-  { cat:"safari", icon:'<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 20h20M4 20 9 9l3 5 2-3 4 9"/><circle cx="18" cy="5" r="2"/></svg>',
-    title:"Safaris", desc:"Serengeti, Ngorongoro and the southern parks — tracked to where the wildlife actually is this week, not a fixed loop.", from:"400" },
-  { cat:"kilimanjaro", icon:'<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m8 3 4 8 5-5 5 15H2L8 3z"/></svg>',
+  { cat:"kilimanjaro", color:"var(--c-kili)", icon:'<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m8 3 4 8 5-5 5 15H2L8 3z"/></svg>',
     title:"Kilimanjaro", desc:"Guided climbs up Africa's highest peak across five climate zones, on the route that fits your time and fitness.", from:"1,850" },
-  { cat:"zanzibar", icon:'<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12c2-2 4-2 6 0s4 2 6 0 4-2 6 0M2 18c2-2 4-2 6 0s4 2 6 0 4-2 6 0"/><circle cx="12" cy="6" r="3"/></svg>',
-    title:"Zanzibar", desc:"Stone Town, spice farms and dhow cruises, then days built for doing nothing at all on the coast.", from:"520" }
+  { cat:"safari", color:"var(--c-safari)", icon:'<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 20h20M4 20 9 9l3 5 2-3 4 9"/><circle cx="18" cy="5" r="2"/></svg>',
+    title:"Safaris", desc:"Serengeti, Ngorongoro and the southern parks — tracked to where the wildlife actually is this week, not a fixed loop.", from:"400" },
+  { cat:"zanzibar", color:"var(--c-zanzibar)", icon:'<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12c2-2 4-2 6 0s4 2 6 0 4-2 6 0M2 18c2-2 4-2 6 0s4 2 6 0 4-2 6 0"/><circle cx="12" cy="6" r="3"/></svg>',
+    title:"Zanzibar", desc:"Stone Town, spice farms and dhow cruises, then days built for doing nothing at all on the coast.", from:"520" },
+  { cat:"biking", color:"var(--c-biking)", icon:'<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="17" r="3"/><circle cx="18" cy="17" r="3"/><path d="M6 17 9 10h4l3 7M9 10l2-3h3"/></svg>',
+    title:"Biking", desc:"Mountain bike through highland farms, villages and crater rims, with a support vehicle following the whole way.", from:"780" }
 ];
 
 document.getElementById('pillarsGrid').innerHTML = PILLARS.map(p => `
@@ -330,7 +423,7 @@ function renderKiliRoute(routeId){
 }
 if (kiliMapEl) renderKiliRoute('machame');
 
-document.getElementById('tabs').innerHTML = Object.entries(CATS).map(([key,c]) => `
+document.getElementById('tabs').innerHTML = Object.entries(CATS).filter(([key]) => TRIPS.some(t => t.category === key)).map(([key,c]) => `
   <button class="tab" data-cat="${key}" onclick="setTab('${key}')">${c.label}</button>
 `).join('');
 
@@ -339,7 +432,7 @@ function renderTrips(){
   document.querySelector('.trips-grid').parentElement.style.setProperty('--accent', CATS[activeCat].color);
   document.documentElement.style.setProperty('--accent', CATS[activeCat].color);
 
-  document.getElementById('tripsGrid').innerHTML = TRIPS.filter(t => t.category === activeCat).map(t => `
+  document.getElementById('tripsGrid').innerHTML = TRIPS.filter(t => t.category === activeCat).slice(0, 3).map(t => `
     <a class="trip" data-id="${t.id}" href="/${t.id}" onmousemove="trackMouse(event,this)">
       <div class="trip-media">
         <img src="${t.image}" alt="${t.name}" loading="lazy">
@@ -384,58 +477,38 @@ document.getElementById('trustBar').innerHTML = TRUST.map(t => `
   <div class="trust-item">${t.icon}<strong>${t.title}</strong><span>${t.desc}</span></div>
 `).join('');
 
-const FEATURED = [
-  { image:"{{ asset('images/hero-safari.jpg') }}", region:"Arusha Region", title:"Ngorongoro Crater", subtitle:"The world's largest intact caldera", rating:4.9, reviews:2847, price:1450, category:"safari", tripId:"northern-circuit" },
-  { image:"{{ asset('images/hero-kilimanjaro.jpg') }}", region:"Kilimanjaro Region", title:"Mount Kilimanjaro", subtitle:"Africa's rooftop, five climate zones up", rating:4.8, reviews:1930, price:2450, category:"kilimanjaro", tripId:"machame" },
-  { image:"{{ asset('images/hero-zanzibar.jpg') }}", region:"Zanzibar Archipelago", title:"Nungwi Beaches", subtitle:"Turquoise water, white sand, no rush", rating:4.9, reviews:1520, price:650, category:"zanzibar", tripId:"zanzibar-beach" }
-];
-
-let heroIdx = 0;
-let heroTimer;
-
-document.getElementById('heroSlides').innerHTML = FEATURED.map((f,i) =>
-  `<div class="hero-slide${i===0?' active':''}" style="background-image:url('${f.image}')"></div>`
-).join('');
-
-document.getElementById('heroDots').innerHTML = FEATURED.map((f,i) =>
-  `<button class="hero-dot${i===0?' active':''}" onclick="heroGoTo(${i})" aria-label="Show ${f.title}"></button>`
-).join('');
+// The hero always features Kilimanjaro (the flagship trip) rather than
+// rotating through categories — rating/price/reviews are read live from the
+// real Machame package so they never drift out of sync with its own page.
+const HERO = TRIPS.find(t => t.id === 'machame') || TRIPS.find(t => t.category === 'kilimanjaro') || TRIPS[0];
 
 function renderHeroContent(){
-  const f = FEATURED[heroIdx];
   document.getElementById('heroContent').innerHTML = `
     <div class="hero-eyebrow">
       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="10" r="3"/><path d="M12 21s7-7.5 7-12a7 7 0 1 0-14 0c0 4.5 7 12 7 12Z"/></svg>
-      ${f.region}
+      {{ $home->hero_region }}
     </div>
-    <h1>${f.title}</h1>
-    <p class="hero-lede">${f.subtitle}</p>
+    <h1>{{ $home->hero_headline }}</h1>
+    <p class="hero-lede">{{ $home->hero_subtitle }}</p>
     <div class="hero-price-row">
       <div class="hero-rating">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.77 5.82 21 7 14.14l-5-4.87 6.91-1.01L12 2z"/></svg>
-        <strong>${f.rating}</strong><span class="count">· ${f.reviews.toLocaleString()} reviews</span>
+        <strong>${HERO.rating}</strong><span class="count">· ${HERO.reviews.toLocaleString()} reviews</span>
       </div>
-      <div class="hero-price">$${f.price.toLocaleString()}<small>from, per person</small></div>
+      <div class="hero-price">$${HERO.price.toLocaleString()}<small>from, per person</small></div>
     </div>
     <div class="hero-ctas">
-      <button class="btn btn-fill" onclick="openBooking('${f.tripId}')">
+      <button class="btn btn-fill" onclick="openBooking('${HERO.id}')">
         Book this trip
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
       </button>
-      <a class="hero-icon-btn" href="/${f.tripId}" aria-label="View trip details">
+      <a class="hero-icon-btn" href="/${HERO.id}" aria-label="View trip details">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
       </a>
     </div>
   `;
-  document.querySelectorAll('.hero-slide').forEach((el,i) => el.classList.toggle('active', i === heroIdx));
-  document.querySelectorAll('.hero-dot').forEach((el,i) => el.classList.toggle('active', i === heroIdx));
 }
-function heroGoTo(i){ heroIdx = (i + FEATURED.length) % FEATURED.length; renderHeroContent(); resetHeroTimer(); }
-function heroNext(){ heroGoTo(heroIdx + 1); }
-function heroPrev(){ heroGoTo(heroIdx - 1); }
-function resetHeroTimer(){ clearInterval(heroTimer); heroTimer = setInterval(heroNext, 6000); }
 renderHeroContent();
-resetHeroTimer();
 
 const qp = new URLSearchParams(location.search);
 if (qp.get('trip')) {

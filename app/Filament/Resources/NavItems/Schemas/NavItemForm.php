@@ -154,7 +154,7 @@ class NavItemForm
                     'category' => [
                         'safari' => 'Safaris',
                         'kilimanjaro' => 'Kilimanjaro',
-                        'zanzibar' => 'Zanzibar',
+                        'zanzibar' => 'Traditional tour',
                     ],
                     'package' => Package::orderBy('name')->pluck('name', 'slug')->all(),
                     'about' => NavItem::ABOUT_SECTIONS,

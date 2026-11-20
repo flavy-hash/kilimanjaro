@@ -1,6 +1,7 @@
 {{-- Icon-card grid for "why choose us" style sections. Expects $items as an
-     array of {title, text}. Icons/colors cycle by position rather than being
-     picked per item, so callers stay a plain title+text list. --}}
+     array of {title, text, image?}. Icons/colors cycle by position rather
+     than being picked per item, so callers stay a plain title+text list.
+     When an item has an image, it's shown in place of the icon. --}}
 @php
   $whyIcons = [
     ['bg' => 'var(--glow)', 'svg' => '<path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3"/><circle cx="4" cy="13" r="2"/><circle cx="12" cy="10" r="2"/><circle cx="20" cy="14" r="2"/>'],
@@ -13,12 +14,22 @@
 <div class="why-grid">
   @foreach ($items as $i => $item)
     @php($icon = $whyIcons[$i % count($whyIcons)])
-    <div class="why-card">
-      <div class="why-card-icon" style="background:color-mix(in srgb, {{ $icon['bg'] }} 18%, transparent); color:{{ $icon['bg'] }}">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">{!! $icon['svg'] !!}</svg>
+    @if (filled($item['image'] ?? null))
+      <div class="why-card has-photo">
+        <img class="why-card-image" src="{{ asset($item['image']) }}" alt="{{ $item['title'] }}" loading="lazy">
+        <div class="why-card-text">
+          <h3>{{ $item['title'] }}</h3>
+          <p>{{ $item['text'] }}</p>
+        </div>
       </div>
-      <h3>{{ $item['title'] }}</h3>
-      <p>{{ $item['text'] }}</p>
-    </div>
+    @else
+      <div class="why-card">
+        <div class="why-card-icon" style="background:color-mix(in srgb, {{ $icon['bg'] }} 18%, transparent); color:{{ $icon['bg'] }}">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">{!! $icon['svg'] !!}</svg>
+        </div>
+        <h3>{{ $item['title'] }}</h3>
+        <p>{{ $item['text'] }}</p>
+      </div>
+    @endif
   @endforeach
 </div>

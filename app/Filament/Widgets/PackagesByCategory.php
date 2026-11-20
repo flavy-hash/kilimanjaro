@@ -19,7 +19,7 @@ class PackagesByCategory extends ChartWidget
             'Safaris' => Package::where('category', 'safari')->where('circuit', 'northern')->count(),
             'Southern Circuit' => Package::where('category', 'safari')->where('circuit', 'southern')->count(),
             'Kilimanjaro' => Package::where('category', 'kilimanjaro')->count(),
-            'Zanzibar' => Package::where('category', 'zanzibar')->count(),
+            'Traditional tour' => Package::where('category', 'zanzibar')->count(),
         ];
 
         return [

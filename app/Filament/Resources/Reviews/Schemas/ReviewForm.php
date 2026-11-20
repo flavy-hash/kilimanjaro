@@ -24,6 +24,11 @@ class ReviewForm
                             ->required()
                             ->maxLength(120),
 
+                        TextInput::make('country')
+                            ->maxLength(80)
+                            ->placeholder('Italy')
+                            ->helperText('Shown as "Name / Country" on the card.'),
+
                         TextInput::make('email')
                             ->label('Email')
                             ->email()
@@ -76,12 +81,17 @@ class ReviewForm
                             ->maxLength(2000)
                             ->columnSpanFull(),
 
-                        FileUpload::make('photo')
+                        FileUpload::make('photos')
+                            ->label('Trip photos')
                             ->image()
+                            ->multiple()
+                            ->maxFiles(2)
+                            ->reorderable()
                             ->disk('site')
                             ->directory('images/reviews')
                             ->visibility('public')
                             ->imageEditor()
+                            ->helperText('Up to 2 photos, shown side by side on the card.')
                             ->columnSpanFull(),
                     ]),
 
