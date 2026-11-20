@@ -1,7 +1,7 @@
 @extends('layouts.site')
 
 @section('title', 'All Tours & Experiences · Perfect Kilimanjaro')
-@section('meta_description', 'Every trip we run in Tanzania — perfect kilimanajro, Kilimanjaro climbs and Zanzibar escapes, all planned and guided in-house.')
+@section('meta_description', 'Every trip we run in Tanzania — Serengeti and Ruaha safaris, Kilimanjaro climbs and Zanzibar escapes, all planned and guided in-house.')
 
 @section('content')
 
@@ -37,13 +37,32 @@
   </div>
 </header>
 
-<section>
+<section id="tours">
   <div class="wrap">
-    <div class="trips-head">
-      <div class="tabs" id="toursTabs"></div>
-      <div class="tours-count" id="toursCount"></div>
+    <div class="tour-filters" id="tourFilters">
+      <div class="tour-filter-row">
+        <div class="tour-filter-label">Destination</div>
+        <div class="tour-filter-chips" data-group="dest"></div>
+      </div>
+      <div class="tour-filter-row">
+        <div class="tour-filter-label">Style</div>
+        <div class="tour-filter-chips" data-group="style"></div>
+      </div>
+      <div class="tour-filter-row">
+        <div class="tour-filter-label">Duration</div>
+        <div class="tour-filter-chips" data-group="days"></div>
+      </div>
+      <div class="tour-filter-foot">
+        <div class="tour-filter-count" id="toursCount"></div>
+        <button class="tour-filter-clear" id="toursClear" type="button" onclick="clearTourFilters()">Clear filters</button>
+      </div>
     </div>
+
     <div class="trips-grid" id="toursGrid"></div>
+    <div class="tour-empty" id="toursEmpty" hidden>
+      No trip matches all of those filters. <button type="button" onclick="clearTourFilters()">Clear filters</button> or
+      <a href="#" onclick="openBooking();return false;">ask us to plan one</a>.
+    </div>
   </div>
 </section>
 
@@ -51,34 +70,115 @@
 
 @push('styles')
 <style>
-  .tours-count{font-family:'JetBrains Mono',monospace;font-size:12.5px;color:var(--dim);letter-spacing:.05em;white-space:nowrap}
-  @media(max-width:640px){
-    .trips-head{align-items:flex-start;gap:14px}
+  :root[data-theme="light"] #tours{background:var(--deep)}
+  #tours{padding-top:64px}
+  .tour-filters{
+    background:var(--panel);border:1px solid var(--line);border-radius:24px;
+    padding:30px 34px 22px;margin-bottom:44px;box-shadow:0 18px 40px -28px var(--shadow-deep);
+  }
+  .tour-filter-row{display:grid;grid-template-columns:150px 1fr;gap:16px;align-items:center;padding:8px 0}
+  .tour-filter-label{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:var(--dim)}
+  .tour-filter-chips{display:flex;flex-wrap:wrap;gap:8px}
+  .tour-chip{
+    all:unset;box-sizing:border-box;cursor:pointer;
+    padding:9px 18px;border-radius:100px;border:1px solid var(--line-hi);background:var(--ink);
+    font-family:'Space Grotesk',sans-serif;font-size:13.5px;font-weight:500;color:var(--ice);
+    transition:background .15s,border-color .15s,color .15s;
+  }
+  .tour-chip:hover{border-color:var(--glow);color:var(--glow-soft)}
+  .tour-chip:focus-visible{outline:2px solid var(--glow);outline-offset:2px}
+  .tour-chip[aria-pressed="true"]{background:var(--glow);border-color:var(--glow);color:var(--on-accent)}
+  .tour-chip:disabled{opacity:.38;cursor:default;border-color:var(--line);color:var(--dim)}
+  .tour-chip small{font-size:11.5px;opacity:.7;margin-left:5px;font-weight:400}
+  .tour-filter-foot{
+    display:flex;justify-content:space-between;align-items:center;gap:16px;
+    margin-top:14px;padding-top:16px;border-top:1px solid var(--line);
+  }
+  .tour-filter-count{font-size:14px;color:var(--dim)}
+  .tour-filter-count b{color:var(--ice);font-weight:700}
+  .tour-filter-clear{all:unset;cursor:pointer;font-size:13.5px;font-weight:600;color:var(--glow-soft)}
+  .tour-filter-clear:hover{text-decoration:underline}
+  .tour-filter-clear[hidden]{display:none}
+  .tour-empty{text-align:center;color:var(--dim);font-size:15px;padding:40px 0}
+  .tour-empty button,.tour-empty a{all:unset;cursor:pointer;color:var(--glow-soft);font-weight:600}
+  .tour-empty button:hover,.tour-empty a:hover{text-decoration:underline}
+  @media(max-width:760px){
+    .tour-filters{padding:22px 18px 16px;border-radius:20px}
+    .tour-filter-row{grid-template-columns:1fr;gap:10px;padding:10px 0}
+    .tour-chip{padding:8px 14px;font-size:13px}
   }
 </style>
 @endpush
 
 @push('scripts')
 <script>
-const TOUR_TABS = [
-  { key:'all', label:'All Tours', color:'var(--c-safari)' },
-  { key:'safari', label:'Safaris', color:'var(--c-safari)' },
-  { key:'kilimanjaro', label:'Kilimanjaro', color:'var(--c-kili)' },
-  { key:'zanzibar', label:'Zanzibar', color:'var(--c-zanzibar)' }
-];
-let toursFilter = 'all';
+/* Filter rows are built from the trips themselves, so a destination or trip
+   length only appears once there's a published trip for it. "Style" has no
+   field of its own; it is the per-person price band. */
+const TOUR_FILTERS = {
+  dest: [
+    { key:'all', label:'All', test:() => true },
+    { key:'kilimanjaro', label:CATS.kilimanjaro.label, test:t => t.category === 'kilimanjaro' },
+    { key:'safari', label:CATS.safari.label, test:t => t.category === 'safari' },
+    { key:'northern', label:'Northern Circuit', test:t => t.category === 'safari' && t.circuit === 'northern' },
+    { key:'southern', label:'Southern Circuit', test:t => t.category === 'safari' && t.circuit === 'southern' },
+    { key:'zanzibar', label:CATS.zanzibar.label, test:t => t.category === 'zanzibar' },
+    { key:'east_africa', label:CATS.east_africa.label, test:t => t.category === 'east_africa' },
+    { key:'biking', label:CATS.biking.label, test:t => t.category === 'biking' },
+  ],
+  style: [
+    { key:'all', label:'All', test:() => true },
+    { key:'budget', label:'Budget', hint:'under $1,500', test:t => t.price < 1500 },
+    { key:'mid', label:'Mid-range', hint:'$1,500–1,999', test:t => t.price >= 1500 && t.price < 2000 },
+    { key:'luxury', label:'Luxury', hint:'$2,000+', test:t => t.price >= 2000 },
+  ],
+  days: [
+    { key:'all', label:'Any', test:() => true },
+    ...[...new Set(TRIPS.map(t => Number(t.days)))].sort((a, b) => a - b)
+      .map(d => ({ key:String(d), label:`${d} day${d === 1 ? '' : 's'}`, test:t => Number(t.days) === d })),
+  ],
+};
+for (const group in TOUR_FILTERS) {
+  TOUR_FILTERS[group] = TOUR_FILTERS[group].filter(o => o.key === 'all' || TRIPS.some(o.test));
+}
 
-document.getElementById('toursTabs').innerHTML = TOUR_TABS.map(t => `
-  <button class="tab" data-key="${t.key}" onclick="setToursFilter('${t.key}')">${t.label}</button>
-`).join('');
+const tourState = { dest:'all', style:'all', days:'all' };
+const optionFor = (group, key) => TOUR_FILTERS[group].find(o => o.key === key);
+
+// Trips that pass every group except `skip` — used to grey out chips that
+// would leave nothing to show given the other choices.
+function tripsMatching(skip){
+  return TRIPS.filter(t => Object.keys(tourState).every(g => g === skip || optionFor(g, tourState[g]).test(t)));
+}
+
+document.querySelectorAll('#tourFilters [data-group]').forEach(row => {
+  const group = row.dataset.group;
+  row.innerHTML = TOUR_FILTERS[group].map(o => `
+    <button type="button" class="tour-chip" data-key="${o.key}" onclick="setTourFilter('${group}','${o.key}')"
+      ${o.hint ? `title="${o.hint} per person"` : ''}>${o.label}${o.hint ? `<small>${o.hint}</small>` : ''}</button>
+  `).join('');
+});
 
 function renderTours(){
-  document.querySelectorAll('#toursTabs .tab').forEach(el => el.dataset.active = el.dataset.key === toursFilter);
-  const active = TOUR_TABS.find(t => t.key === toursFilter);
-  document.getElementById('toursGrid').parentElement.style.setProperty('--accent', active.color);
+  document.querySelectorAll('#tourFilters [data-group]').forEach(row => {
+    const group = row.dataset.group;
+    const pool = tripsMatching(group);
+    row.querySelectorAll('.tour-chip').forEach(chip => {
+      const active = chip.dataset.key === tourState[group];
+      chip.setAttribute('aria-pressed', active);
+      chip.disabled = !active && !pool.some(optionFor(group, chip.dataset.key).test);
+    });
+  });
 
-  const list = toursFilter === 'all' ? TRIPS : TRIPS.filter(t => t.category === toursFilter);
-  document.getElementById('toursCount').textContent = `Showing ${list.length} of ${TRIPS.length} tours`;
+  const list = tripsMatching(null);
+  const filtered = Object.values(tourState).some(v => v !== 'all');
+  document.getElementById('toursCount').innerHTML = `<b>${list.length}</b> of ${TRIPS.length} trips`;
+  document.getElementById('toursClear').hidden = !filtered;
+  document.getElementById('toursEmpty').hidden = list.length > 0;
+
+  const params = new URLSearchParams();
+  for (const g in tourState) if (tourState[g] !== 'all') params.set(g === 'dest' ? 'destination' : g, tourState[g]);
+  history.replaceState(null, '', location.pathname + (params.toString() ? '?' + params : ''));
 
   document.getElementById('toursGrid').innerHTML = list.map(t => `
     <a class="trip" style="--pc:${CATS[t.category].color}" href="/${t.id}" onmousemove="trackMouse(event,this)">
@@ -113,10 +213,13 @@ function renderTours(){
     </a>
   `).join('');
 }
-function setToursFilter(key){ toursFilter = key; renderTours(); }
-renderTours();
+function setTourFilter(group, key){ tourState[group] = key; renderTours(); }
+function clearTourFilters(){ Object.keys(tourState).forEach(g => tourState[g] = 'all'); renderTours(); }
 
+// Deep links: ?category= (from trip breadcrumbs) or the ?destination=&style=&days= this page writes.
 const qp = new URLSearchParams(location.search);
-if (qp.get('category')) setToursFilter(qp.get('category'));
+const wanted = { dest: qp.get('destination') || qp.get('category'), style: qp.get('style'), days: qp.get('days') };
+for (const g in wanted) if (wanted[g] && optionFor(g, wanted[g])) tourState[g] = wanted[g];
+renderTours();
 </script>
 @endpush
