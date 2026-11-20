@@ -74,7 +74,7 @@ class AboutPageContent extends Page
                                             ->columnSpanFull(),
                                     ]),
 
-                                Section::make('Our story')
+                                Section::make('Our heritage / story')
                                     ->schema([
                                         TextInput::make('story_title')->label('Eyebrow tag')->maxLength(60),
                                         TextInput::make('story_heading')->label('Heading')->required()->maxLength(200)
@@ -101,8 +101,58 @@ class AboutPageContent extends Page
                                             ->collapsible(),
                                     ]),
 
-                                Section::make('What we do differently')
-                                    ->description('Shown as a row of short value statements.')
+                                Section::make('Three generations')
+                                    ->description('The family history timeline — grandfather, father, Priscus, and so on.')
+                                    ->schema([
+                                        TextInput::make('generations_tag')->label('Eyebrow tag')->maxLength(60),
+                                        TextInput::make('generations_title')->label('Heading')->required()->maxLength(200)
+                                            ->helperText('HTML like <em>…</em> is allowed for the italic word.'),
+                                        Repeater::make('generations')
+                                            ->hiddenLabel()
+                                            ->schema([
+                                                TextInput::make('name')->label('Name / role')->required()->maxLength(80),
+                                                Textarea::make('text')->rows(3)->required()->maxLength(600),
+                                            ])
+                                            ->addActionLabel('Add generation')
+                                            ->reorderable()
+                                            ->itemLabel(fn (array $state): ?string => $state['name'] ?? null)
+                                            ->collapsible(),
+                                        Textarea::make('generations_closing')->label('Closing line')->rows(2)->maxLength(300),
+                                    ]),
+
+                                Section::make('What we do')
+                                    ->description('Shown as a short list of trip types.')
+                                    ->schema([
+                                        TextInput::make('do_tag')->label('Eyebrow tag')->maxLength(60),
+                                        TextInput::make('do_title')->label('Heading')->required()->maxLength(200)
+                                            ->helperText('HTML like <em>…</em> is allowed for the italic word.'),
+                                        Repeater::make('do_items')
+                                            ->hiddenLabel()
+                                            ->schema([
+                                                TextInput::make('title')->required()->maxLength(60),
+                                                Textarea::make('text')->rows(2)->required()->maxLength(300),
+                                            ])
+                                            ->addActionLabel('Add item')
+                                            ->reorderable()
+                                            ->itemLabel(fn (array $state): ?string => $state['title'] ?? null)
+                                            ->collapsible(),
+                                    ]),
+
+                                Section::make('How we keep you safe')
+                                    ->schema([
+                                        TextInput::make('safety_tag')->label('Eyebrow tag')->maxLength(60),
+                                        TextInput::make('safety_title')->label('Heading')->required()->maxLength(200)
+                                            ->helperText('HTML like <em>…</em> is allowed for the italic word.'),
+                                        Textarea::make('safety_lede')->label('Subheading')->rows(2)->maxLength(400),
+                                        Repeater::make('safety_points')
+                                            ->label('Points')
+                                            ->simple(Textarea::make('value')->rows(2)->required())
+                                            ->addActionLabel('Add point')
+                                            ->reorderable(),
+                                    ]),
+
+                                Section::make('What we believe')
+                                    ->description('Shown as a row of short belief statements.')
                                     ->schema([
                                         TextInput::make('values_tag')->label('Eyebrow tag')->maxLength(60),
                                         TextInput::make('values_heading')->label('Heading')->required()->maxLength(200)
@@ -117,6 +167,18 @@ class AboutPageContent extends Page
                                             ->reorderable()
                                             ->itemLabel(fn (array $state): ?string => $state['title'] ?? null)
                                             ->collapsible(),
+                                    ]),
+
+                                Section::make('100% Locally Owned')
+                                    ->schema([
+                                        TextInput::make('locally_owned_title')->label('Heading')->required()->maxLength(200),
+                                        Textarea::make('locally_owned_text')->label('Text')->rows(3)->maxLength(600),
+                                    ]),
+
+                                Section::make('Closing line')
+                                    ->description('A short line shown just above the bottom banner.')
+                                    ->schema([
+                                        Textarea::make('closing_text')->hiddenLabel()->rows(2)->maxLength(400),
                                     ]),
 
                                 Section::make('Bottom banner')
