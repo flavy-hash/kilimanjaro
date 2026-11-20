@@ -1,19 +1,59 @@
 @extends('layouts.site')
 
-@section('title', $trip['name'] . ' · Safiri')
+@section('title', $trip['name'] . ' · Perfect Kilimanjaro')
 @section('meta_description', Str::limit($trip['blurb'], 150))
+@section('og_image', asset($trip['image']))
 
 @php
   $catMeta = [
     'safari' => ['label' => 'Safaris', 'color' => 'var(--c-safari)', 'noun' => 'safari', 'adj' => 'safari'],
     'kilimanjaro' => ['label' => 'Kilimanjaro', 'color' => 'var(--c-kili)', 'noun' => 'climb', 'adj' => 'Kilimanjaro'],
     'zanzibar' => ['label' => 'Zanzibar', 'color' => 'var(--c-zanzibar)', 'noun' => 'trip', 'adj' => 'Zanzibar'],
+    'east_africa' => ['label' => 'East Africa', 'color' => 'var(--c-east-africa)', 'noun' => 'trip', 'adj' => 'East Africa'],
+    'biking' => ['label' => 'Biking', 'color' => 'var(--c-biking)', 'noun' => 'ride', 'adj' => 'biking'],
   ][$trip['category']];
   $sectionWord = $catMeta['label'] === 'Safaris' ? 'Safari' : $catMeta['label'];
   $galleryUrls = array_map(fn ($g) => asset($g), $trip['gallery']);
+
+  $tripLd = [
+    '@context' => 'https://schema.org',
+    '@type' => 'TouristTrip',
+    'name' => $trip['name'],
+    'description' => $trip['blurb'],
+    'image' => asset($trip['image']),
+    'url' => url($trip['id']),
+    'offers' => [
+      '@type' => 'Offer',
+      'price' => $trip['price'],
+      'priceCurrency' => 'USD',
+      'availability' => 'https://schema.org/InStock',
+      'url' => url($trip['id']),
+    ],
+  ];
+  if (!empty($trip['rating']) && !empty($trip['reviews'])) {
+    $tripLd['aggregateRating'] = [
+      '@type' => 'AggregateRating',
+      'ratingValue' => $trip['rating'],
+      'reviewCount' => $trip['reviews'],
+    ];
+  }
+
+  $breadcrumbLd = [
+    '@context' => 'https://schema.org',
+    '@type' => 'BreadcrumbList',
+    'itemListElement' => [
+      ['@type' => 'ListItem', 'position' => 1, 'name' => 'Home', 'item' => route('home')],
+      ['@type' => 'ListItem', 'position' => 2, 'name' => 'Tours', 'item' => route('tours')],
+      ['@type' => 'ListItem', 'position' => 3, 'name' => $catMeta['label'], 'item' => route('tours').'?category='.$trip['category']],
+      ['@type' => 'ListItem', 'position' => 4, 'name' => $trip['name'], 'item' => url($trip['id'])],
+    ],
+  ];
 @endphp
 
 @section('content')
+
+<script type="application/ld+json">{!! json_encode($tripLd, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}</script>
+<script type="application/ld+json">{!! json_encode($breadcrumbLd, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}</script>
 
 {{-- ── Hero ───────────────────────────────────────────── --}}
 <header class="trip-hero" id="top" style="--pc:{{ $catMeta['color'] }}">
@@ -65,6 +105,34 @@
      <div class="trip-layout">
       <div class="trip-main">
 
+      {{-- Opening quote --}}
+      @if (filled($trip['quote'] ?? null))
+      <div class="art-section">
+        <blockquote class="trip-quote">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" opacity=".35"><path d="M7.17 6C4.87 6 3 7.87 3 10.17c0 2.3 1.87 4.17 4.17 4.17.34 0 .67-.04.98-.12-.4 1.5-1.5 2.7-3.15 3.4v2.3c3.5-.8 6-3.7 6-7.2V10.17C11 7.87 9.13 6 6.83 6h.34zm10 0c-2.3 0-4.17 1.87-4.17 4.17 0 2.3 1.87 4.17 4.17 4.17.34 0 .67-.04.98-.12-.4 1.5-1.5 2.7-3.15 3.4v2.3c3.5-.8 6-3.7 6-7.2V10.17C21 7.87 19.13 6 16.83 6h.34z"/></svg>
+          <p>{{ $trip['quote'] }}</p>
+          @if ($trip['category'] === 'kilimanjaro')
+            <cite>— Priscus Peter Mtui, Lead Guide &amp; Owner, Perfect Kilimanjaro</cite>
+          @endif
+        </blockquote>
+      </div>
+      @endif
+
+      {{-- Recommended for --}}
+      @if (filled($trip['recommended_for'] ?? null))
+      <div class="art-section">
+        <h2>
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          Recommended for
+        </h2>
+        <div class="chip-row">
+          @foreach ($trip['recommended_for'] as $who)
+            <span class="chip">{{ $who }}</span>
+          @endforeach
+        </div>
+      </div>
+      @endif
+
       {{-- Overview --}}
       <div class="art-section">
         <h2>
@@ -95,6 +163,67 @@
 
       @endif
 
+      {{-- Duration comparison --}}
+      @if (filled($trip['route_comparison_intro'] ?? null) || filled($trip['route_comparison_tiers'] ?? null))
+      <div class="art-section">
+        <h2>
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3v18M7 3v18M3 8h4M3 16h4M17 8h4M17 16h4"/></svg>
+          How this version compares
+        </h2>
+        @if (filled($trip['route_comparison_intro'] ?? null))
+          <p>{{ $trip['route_comparison_intro'] }}</p>
+        @endif
+
+        @if (filled($trip['route_comparison_tiers'] ?? null))
+          <div class="compare-list">
+            @foreach ($trip['route_comparison_tiers'] as $tier)
+              <div class="compare-item">
+                @if (filled($tier['medal'] ?? null))
+                  <span class="compare-medal compare-medal--{{ $tier['medal'] }}">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M15.5 13.5 17 22l-5-3-5 3 1.5-8.5"/></svg>
+                  </span>
+                @endif
+                <div>
+                  <div class="compare-title">
+                    {{ $tier['title'] }}
+                    @if (filled($tier['rate'] ?? null))<span class="compare-rate">{{ $tier['rate'] }}</span>@endif
+                  </div>
+                  <p>{{ $tier['description'] }}</p>
+                </div>
+              </div>
+            @endforeach
+          </div>
+        @endif
+
+        @if (filled($trip['choose_this_if'] ?? null) || filled($trip['choose_other_if'] ?? null))
+          <div class="choose-grid">
+            @if (filled($trip['choose_this_if'] ?? null))
+              <div class="choose-col choose-yes">
+                <h3>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+                  Choose this version if
+                </h3>
+                <ul>
+                  @foreach ($trip['choose_this_if'] as $reason)<li>{{ $reason }}</li>@endforeach
+                </ul>
+              </div>
+            @endif
+            @if (filled($trip['choose_other_if'] ?? null))
+              <div class="choose-col choose-no">
+                <h3>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/></svg>
+                  Choose {{ $trip['choose_other_label'] ?? 'a different version' }} instead if
+                </h3>
+                <ul>
+                  @foreach ($trip['choose_other_if'] as $reason)<li>{{ $reason }}</li>@endforeach
+                </ul>
+              </div>
+            @endif
+          </div>
+        @endif
+      </div>
+      @endif
+
       {{-- Itinerary --}}
       @if (filled($trip['itinerary']))
       <div class="art-section">
@@ -104,8 +233,8 @@
         </h2>
         <div class="itin-list">
           @foreach ($trip['itinerary'] as $i => $day)
-            <div class="itin-item{{ $i === 0 ? ' open' : '' }}">
-              <button class="itin-head" onclick="toggleItin(this)" aria-expanded="{{ $i === 0 ? 'true' : 'false' }}">
+            <div class="itin-item open">
+              <button class="itin-head" onclick="toggleItin(this)" aria-expanded="true">
                 <span class="itin-num">{{ $i + 1 }}</span>
                 <span class="itin-title">{{ $day['t'] }}</span>
                 <svg class="itin-chev" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
@@ -118,9 +247,27 @@
                       @isset($day['elev'])
                         <span class="elev"><span class="k">Elevation</span>{{ $day['elev'] }}</span>
                       @endisset
+                      @isset($day['distance'])
+                        <span><span class="k">Distance</span>{{ $day['distance'] }}</span>
+                      @endisset
+                      @isset($day['time'])
+                        <span><span class="k">Hiking time</span>{{ $day['time'] }}</span>
+                      @endisset
+                      @isset($day['vegetation'])
+                        <span><span class="k">Vegetation</span>{{ $day['vegetation'] }}</span>
+                      @endisset
+                      @isset($day['difficulty'])
+                        <span><span class="k">Difficulty</span>{{ $day['difficulty'] }}</span>
+                      @endisset
                       <span><span class="k">Stay</span>{{ $day['stay'] }}</span>
                       <span><span class="k">Meals</span>{{ $day['meals'] }}</span>
                     </div>
+                    @if (filled($day['note'] ?? null))
+                      <div class="itin-note">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+                        <span>{{ $day['note'] }}</span>
+                      </div>
+                    @endif
                   </div>
                 </div>
               </div>
@@ -142,8 +289,8 @@
           <div class="route-stats-row" id="tripRouteStats"></div>
           <div class="route-map-card">
             <div class="route-map-legend">
-              <span><svg viewBox="0 0 20 8"><line x1="0" y1="4" x2="20" y2="4" stroke="#20261f" stroke-width="2" stroke-dasharray="3 3"/></svg>Ascent</span>
-              <span><svg viewBox="0 0 20 8"><line x1="0" y1="4" x2="20" y2="4" stroke="#3f6b4a" stroke-width="2" stroke-dasharray="3 3"/></svg>Descent</span>
+              <span><svg viewBox="0 0 20 8"><line x1="0" y1="4" x2="20" y2="4" stroke="#0a0a0a" stroke-width="2" stroke-dasharray="3 3"/></svg>Ascent</span>
+              <span><svg viewBox="0 0 20 8"><line x1="0" y1="4" x2="20" y2="4" stroke="#1d4ed8" stroke-width="2" stroke-dasharray="3 3"/></svg>Descent</span>
             </div>
             <svg id="tripKiliMap" viewBox="60 150 680 510" xmlns="http://www.w3.org/2000/svg"></svg>
           </div>
@@ -237,7 +384,7 @@
           <div class="video-scrim"></div>
           <div class="video-channel">
             <div class="brand-mark">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="#1a0a00"><path d="m8 3 4 8 5-5 5 15H2L8 3z"/></svg>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="#ffffff"><path d="m8 3 4 8 5-5 5 15H2L8 3z"/></svg>
             </div>
             <div class="video-channel-text">
               <strong class="notranslate">Perfect Kilimanjaro</strong>
@@ -251,6 +398,42 @@
             <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8ZM9.6 15.5v-7l6.3 3.5-6.3 3.5Z"/></svg>
             Watch on YouTube
           </span>
+        </div>
+      </div>
+      @endif
+
+      {{-- Complete pricing --}}
+      @if (filled($trip['price_tiers'] ?? null))
+      <div class="art-section">
+        <h2>
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M14.8 9a2.8 2.8 0 0 0-2.8-1.5c-1.7 0-3 1-3 2.3 0 3.3 6 1.6 6 4.9 0 1.3-1.3 2.3-3 2.3a2.8 2.8 0 0 1-2.8-1.5M12 6v1.3M12 16.7V18"/></svg>
+          Complete pricing
+        </h2>
+        <div class="price-table-wrap">
+          <table class="price-table">
+            <thead>
+              <tr>
+                <th>Group size</th>
+                @if (collect($trip['price_tiers'])->contains(fn ($t) => filled($t['park_fees'] ?? null)))
+                  <th>Park fees</th>
+                  <th>Other costs</th>
+                @endif
+                <th>Total per person</th>
+              </tr>
+            </thead>
+            <tbody>
+              @foreach ($trip['price_tiers'] as $tier)
+                <tr>
+                  <td>{{ $tier['label'] }}</td>
+                  @if (collect($trip['price_tiers'])->contains(fn ($t) => filled($t['park_fees'] ?? null)))
+                    <td>${{ number_format($tier['park_fees'] ?? 0) }}</td>
+                    <td>${{ number_format($tier['other_costs'] ?? 0) }}</td>
+                  @endif
+                  <td><strong>${{ number_format($tier['price']) }}</strong></td>
+                </tr>
+              @endforeach
+            </tbody>
+          </table>
         </div>
       </div>
       @endif
@@ -286,34 +469,81 @@
 
       @endif
 
+      {{-- Tipping guide --}}
+      @if (filled($trip['tipping_table'] ?? null))
+      <div class="art-section">
+        <h2>
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+          Tipping guide
+        </h2>
+        <div class="price-table-wrap">
+          <table class="price-table">
+            <thead>
+              <tr><th>Crew member</th><th>Recommended tip per day</th></tr>
+            </thead>
+            <tbody>
+              @foreach ($trip['tipping_table'] as $row)
+                <tr><td>{{ $row['role'] }}</td><td>{{ $row['tip'] }}</td></tr>
+              @endforeach
+            </tbody>
+          </table>
+        </div>
+        <p class="route-note">Tipping is not mandatory but is highly appreciated and depends on your satisfaction with the service.</p>
+      </div>
+      @endif
+
+      {{-- Optional extras --}}
+      @if (filled($trip['optional_extras'] ?? null))
+      <div class="art-section">
+        <h2>
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+          Optional extras
+        </h2>
+        <ul class="extras-list">
+          @foreach ($trip['optional_extras'] as $extra)
+            <li>{{ $extra }}</li>
+          @endforeach
+        </ul>
+      </div>
+      @endif
+
+      {{-- Closing note --}}
+      @if (filled($trip['closing_note'] ?? null))
+      <div class="art-section">
+        <h2>
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+          A note from Priscus
+        </h2>
+        <div class="closing-note">
+          @foreach (explode("\n\n", $trip['closing_note']) as $para)
+            <p>{{ $para }}</p>
+          @endforeach
+          @if ($trip['category'] === 'kilimanjaro')
+            <p class="closing-sign">
+              — Priscus Peter Mtui<br>
+              <em>Lead Guide &amp; Owner, Perfect Kilimanjaro</em><br>
+              The Ngatambaku Mtui Family · Marangu Village · Moshi, Tanzania
+            </p>
+          @endif
+        </div>
+      </div>
+      @endif
+
       {{-- Why book --}}
       <div class="art-section">
         <h2>
           <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 1 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78z"/></svg>
           Why book with Perfect Kilimanjaro
         </h2>
-        <div class="why-list">
-          <div class="why-item">
-            <div class="why-num">1</div>
-            <div><strong>Tailor-made, not off the shelf</strong><span>Every itinerary is adjusted to your dates, pace and budget — this page is a starting point, not a fixed package.</span></div>
-          </div>
-          <div class="why-item">
-            <div class="why-num">2</div>
-            <div><strong>Tanzanian guides, on staff</strong><span>Local guides who have worked these parks and routes for years, employed by us rather than subcontracted per trip.</span></div>
-          </div>
-          <div class="why-item">
-            <div class="why-num">3</div>
-            <div><strong>Private departures</strong><span>Your vehicle and your group. We never add strangers to fill seats or combine bookings to cut our costs.</span></div>
-          </div>
-          <div class="why-item">
-            <div class="why-num">4</div>
-            <div><strong>Stays we've slept in</strong><span>Camps and lodges chosen from first-hand stays, not booked blind off a wholesale list.</span></div>
-          </div>
-          <div class="why-item">
-            <div class="why-num">5</div>
-            <div><strong>One thread, start to finish</strong><span>The same WhatsApp conversation from your first question to the day you fly home — usually answered within the hour.</span></div>
-          </div>
-        </div>
+        {{-- The homepage's admin-managed cards (with photos); this list only
+             shows if those haven't been filled in. --}}
+        @include('partials.why-grid', ['items' => filled($whyItems ?? null) ? $whyItems : [
+          ['title' => 'Tailor-made, not off the shelf', 'text' => 'Every itinerary is adjusted to your dates, pace and budget — this page is a starting point, not a fixed package.'],
+          ['title' => 'Tanzanian guides, on staff', 'text' => 'Local guides who have worked these parks and routes for years, employed by us rather than subcontracted per trip.'],
+          ['title' => 'Private departures', 'text' => 'Your vehicle and your group. We never add strangers to fill seats or combine bookings to cut our costs.'],
+          ['title' => "Stays we've slept in", 'text' => 'Camps and lodges chosen from first-hand stays, not booked blind off a wholesale list.'],
+          ['title' => 'One thread, start to finish', 'text' => 'The same WhatsApp conversation from your first question to the day you fly home — usually answered within the hour.'],
+        ]])
       </div>
 
       </div>{{-- /.trip-main --}}
@@ -324,6 +554,18 @@
           <div class="book-from">From</div>
           <div class="book-price">${{ number_format($trip['price']) }}</div>
           <p class="book-note">per person sharing, excluding international flights</p>
+
+          @if (!empty($trip['price_tiers']))
+            <div class="price-tiers">
+              <div class="price-tiers-title">Price per person by group size</div>
+              @foreach ($trip['price_tiers'] as $tier)
+                <div class="spec-row">
+                  <span class="k">{{ $tier['label'] }}</span>
+                  <span class="v">${{ number_format($tier['price']) }}</span>
+                </div>
+              @endforeach
+            </div>
+          @endif
 
           <div class="spec-row">
             <span class="k">Duration</span>
@@ -352,6 +594,16 @@
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
             </button>
             <a class="btn btn-line" href="https://wa.me/255752967222" target="_blank" rel="noopener">Ask a question</a>
+            <button type="button" class="btn btn-line" onclick="openPdfGate()">
+              Download PDF
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3M6 15l6 6 6-6M4 21h16"/></svg>
+            </button>
+            @if ($trip['price'] > 0)
+              <button type="button" class="btn btn-line" onclick="openQuote()">
+                Get an Instant Quote
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+              </button>
+            @endif
           </div>
 
           <p class="book-fine">No payment taken online — we confirm availability first.</p>
@@ -446,5 +698,110 @@
 </script>
 @endpush
 @endif
+
+<div class="overlay" id="pdfGateOverlay" onclick="if(event.target===this)closePdfGate()">
+  <div class="drawer" style="width:min(420px,100vw)">
+    <button class="drawer-close" onclick="closePdfGate()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+    </button>
+
+    <div class="tag" style="margin-bottom:8px">Download</div>
+    <h3>Get the <em>itinerary PDF</em></h3>
+    <p class="sub">Enter your email and we'll start your download — we'll also use it to follow up with any details you need.</p>
+
+    <form method="POST" action="{{ route('trip.pdf.request', $trip['id']) }}">
+      @csrf
+      <div class="field">
+        <label>Email</label>
+        <input name="email" required type="email" placeholder="you@email.com">
+      </div>
+      <button class="submit-btn" type="submit">Download PDF →</button>
+    </form>
+  </div>
+</div>
+
+@if ($trip['price'] > 0)
+<div class="overlay" id="quoteOverlay" onclick="if(event.target===this)closeQuote()">
+  <div class="drawer" style="width:min(460px,100vw)">
+    <button class="drawer-close" onclick="closeQuote()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+    </button>
+
+    @if (session('quote_result'))
+      <div class="confirm show">
+        <div class="confirm-icon">
+          <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" style="color:var(--glow)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+        </div>
+        <h3>Your quote is ready</h3>
+        <p class="sub">Reference <strong>{{ session('quote_result')['reference'] }}</strong></p>
+        <div class="price-box">
+          <div><div class="price-box-label">Total</div></div>
+          <div class="price-box-amt">{{ session('quote_result')['total'] }}</div>
+        </div>
+        <a class="btn btn-fill" style="width:100%;justify-content:center;margin-top:18px" href="{{ session('quote_result')['pdf_url'] }}">
+          Download Quote (PDF)
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3M6 15l6 6 6-6M4 21h16"/></svg>
+        </a>
+        <p class="book-fine">This download link works for 7 days. No payment is taken online — we'll follow up to confirm availability.</p>
+        <button class="btn btn-line" style="width:100%;justify-content:center" onclick="closeQuote()">Close</button>
+      </div>
+    @else
+      <div class="tag" style="margin-bottom:8px">Instant quote</div>
+      <h3>Get an <em>instant quote</em></h3>
+      <p class="sub">Tell us a few details and we'll generate a branded PDF quote right away — no obligation.</p>
+
+      <form method="POST" action="{{ route('quotes.store') }}">
+        @csrf
+        <input type="hidden" name="package" value="{{ $trip['id'] }}">
+
+        <div style="position:absolute;left:-9999px" aria-hidden="true">
+          <label>Leave this field blank</label>
+          <input type="text" name="website" tabindex="-1" autocomplete="off" value="{{ old('website') }}">
+        </div>
+
+        <div class="field">
+          <label>Full name</label>
+          <input name="name" required value="{{ old('name') }}" placeholder="Your name">
+        </div>
+        <div class="field-row">
+          <div class="field"><label>Email</label><input name="email" required type="email" value="{{ old('email') }}" placeholder="you@email.com"></div>
+          <div class="field"><label>Phone / WhatsApp</label><input name="phone" value="{{ old('phone') }}" placeholder="+255 ..."></div>
+        </div>
+        <div class="field-row">
+          <div class="field"><label>Country</label><input name="country" value="{{ old('country') }}" placeholder="Your country"></div>
+          <div class="field"><label>Travel date</label><input name="travel_start" required type="date" min="{{ now()->toDateString() }}" value="{{ old('travel_start') }}"></div>
+        </div>
+        <div class="field-row">
+          <div class="field"><label>Adults</label><input name="adults" required type="number" min="1" max="30" value="{{ old('adults', 2) }}"></div>
+          <div class="field"><label>Children (under 16)</label><input name="children" type="number" min="0" max="30" value="{{ old('children', 0) }}"></div>
+        </div>
+
+        @if ($errors->quote->any())
+          <p class="form-error">{{ $errors->quote->first() }}</p>
+        @endif
+
+        <button class="submit-btn" type="submit">Get my instant quote →</button>
+      </form>
+    @endif
+  </div>
+</div>
+@endif
+
+@push('scripts')
+<script>
+const pdfGateOverlay = document.getElementById('pdfGateOverlay');
+function openPdfGate(){ pdfGateOverlay.classList.add('open'); document.body.style.overflow = 'hidden'; }
+function closePdfGate(){ pdfGateOverlay.classList.remove('open'); document.body.style.overflow = ''; }
+
+@if ($trip['price'] > 0)
+const quoteOverlay = document.getElementById('quoteOverlay');
+function openQuote(){ quoteOverlay.classList.add('open'); document.body.style.overflow = 'hidden'; }
+function closeQuote(){ quoteOverlay.classList.remove('open'); document.body.style.overflow = ''; }
+@if ($errors->quote->any() || session('quote_result'))
+openQuote();
+@endif
+@endif
+</script>
+@endpush
 
 @endsection
